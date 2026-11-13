@@ -32,3 +32,9 @@ are not an atomic snapshot and cannot always be detected.
 The optional L3 agent evaluation could not complete because its external agent
 backend rejected the evaluation prompt. No L3 assurance is claimed. An optional
 documentation review identified scope wording, which was clarified before release.
+
+A later optional documentation review flagged named-argument display order for
+`average_interest_rates`. Direct DuckDB inspection confirms paired parameter
+names/types are correct; the SQL suite verifies named binding. The review appears
+to compare sorted argument descriptors with unsorted engine type arrays. Required
+structural/behavioral lint remains 100/100 with zero findings and no waivers.

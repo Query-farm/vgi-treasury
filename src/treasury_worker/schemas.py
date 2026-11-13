@@ -192,8 +192,14 @@ DATASETS = {
         title="Public debt transactions",
         amount_units="USD millions",
         description=(
-            "Public debt issues and redemptions by security type, retaining daily and cumulative source amounts. "
-            "For operating cash use operating_cash_balance(); for deposits and withdrawals use deposits_withdrawals()."
+            "Public debt issues and redemptions by security type in USD millions. "
+            "transaction_type distinguishes Issues and Redemptions; security_market distinguishes Marketable and "
+            "Nonmarketable. security_type retains source classifications such as Bills, Notes, Bonds and Government "
+            "Account Series; inspect distinct values in your date window rather than assuming a fixed enumeration. "
+            "transaction_today_amt is daily, transaction_mtd_amt is month-to-date, and transaction_fytd_amt is "
+            "fiscal-year-to-date. These are overlapping measures; do not sum them together or sum cumulative values "
+            "across dates. For operating cash use operating_cash_balance(); for deposits and withdrawals use "
+            "deposits_withdrawals()."
         ),
         schema=pa.schema(
             [
