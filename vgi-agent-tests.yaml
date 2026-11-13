@@ -1,16 +1,40 @@
-# Private graders for the public vgi.agent_test_tasks in the worker's catalog metadata.
-# `vgi-lint lint --ai` runs an agent on each prompt and grades it with check_sql.
-# See https://github.com/Query-farm/vgi-lint-check (VGI920).
-tasks:
-  - name: formal_greeting
-    reference_sql: SELECT starter.main.greet('Grace', 'formal') AS greeting
-  - name: sum_of_squares
-    reference_sql: SELECT sum(squared) AS total FROM starter.main.sequence_table(10)
-  - name: stepped_sequence
-    reference_sql: SELECT n FROM starter.main.sequence_table(4, step := 5) ORDER BY n
-  # Reads the public demo API (https://vgi-starter-api.query-farm.services/v1).
-  - name: items_per_category
-    check_sql: >-
-      SELECT count(*) = 3 AND sum(items) = 25
-      FROM (SELECT category, count(*) AS items
-            FROM starter.main.fetch_items('https://vgi-starter-api.query-farm.services/v1') GROUP BY category)
+{
+  "tasks": [
+    {
+      "name": "datasets",
+      "reference_sql": "SELECT dataset, endpoint, amount_units FROM treasury.main.datasets() ORDER BY dataset"
+    },
+    {
+      "name": "fields",
+      "reference_sql": "SELECT field_name, source_type, source_format FROM treasury.main.fields('v2/accounting/od/debt_to_penny') ORDER BY field_name"
+    },
+    {
+      "name": "records",
+      "reference_sql": "SELECT record_date, record_json FROM treasury.main.records('v2/accounting/od/debt_to_penny', start_date := '2024-01-02', end_date := '2024-01-03') ORDER BY record_date"
+    },
+    {
+      "name": "debt_to_penny",
+      "reference_sql": "SELECT record_date, tot_pub_debt_out_amt FROM treasury.main.debt_to_penny(start_date := '2024-01-02', end_date := '2024-01-03') ORDER BY record_date"
+    },
+    {
+      "name": "operating_cash_balance",
+      "reference_sql": "SELECT record_date, account_type, open_today_bal FROM treasury.main.operating_cash_balance(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY record_date, src_line_nbr"
+    },
+    {
+      "name": "deposits_withdrawals",
+      "reference_sql": "SELECT transaction_type, transaction_catg, transaction_today_amt FROM treasury.main.deposits_withdrawals(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY src_line_nbr"
+    },
+    {
+      "name": "public_debt_transactions",
+      "reference_sql": "SELECT transaction_type, security_type, transaction_today_amt FROM treasury.main.public_debt_transactions(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY src_line_nbr"
+    },
+    {
+      "name": "monthly_statement",
+      "reference_sql": "SELECT classification_desc, current_month_gross_rcpt_amt, current_month_gross_outly_amt FROM treasury.main.monthly_statement(start_date := '2024-01-31', end_date := '2024-01-31') WHERE data_type_cd='D' ORDER BY src_line_nbr"
+    },
+    {
+      "name": "average_interest_rates",
+      "reference_sql": "SELECT security_desc, avg_interest_rate_amt FROM treasury.main.average_interest_rates(start_date := '2024-01-31', end_date := '2024-01-31') ORDER BY security_desc"
+    }
+  ]
+}

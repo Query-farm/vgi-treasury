@@ -1,0 +1,125 @@
+# Public Fiscal Data contract: exact currency, pagination, filters and discovery.
+require vgi
+
+require-env TREASURY_WORKER
+
+statement ok
+LOAD json;
+
+statement ok
+ATTACH 'treasury' (TYPE vgi, LOCATION '{TREASURY_WORKER}');
+
+# curated catalog
+query T
+SELECT count(*) FROM treasury.main.datasets();
+----
+6
+
+# source field metadata
+query TT
+SELECT source_type, source_format FROM treasury.main.fields('v2/accounting/od/debt_to_penny') WHERE field_name='tot_pub_debt_out_amt';
+----
+CURRENCY	$10.20
+
+# exact cents across pages
+query TT
+SELECT count(*), sum(tot_pub_debt_out_amt)::VARCHAR FROM treasury.main.debt_to_penny(page_size := 2);
+----
+5	185000000000001.85
+
+# cap across pages
+query TT
+SELECT record_date::VARCHAR, tot_pub_debt_out_amt::VARCHAR FROM treasury.main.debt_to_penny(page_size := 2, max_rows := 3) ORDER BY record_date;
+----
+2024-01-02	37000000000000.35
+2024-01-03	37000000000000.36
+2024-01-04	37000000000000.37
+
+# date bounds and sort
+query T
+SELECT record_date::VARCHAR FROM treasury.main.debt_to_penny(start_date := '2024-01-03', end_date := '2024-01-05', sort_fields := '-record_date,src_line_nbr', page_size := 1);
+----
+2024-01-05
+2024-01-04
+2024-01-03
+
+# page offset
+query T
+SELECT count(*) FROM treasury.main.debt_to_penny(start_page := 2, page_size := 2);
+----
+3
+
+# empty date window
+query T
+SELECT count(*) FROM treasury.main.debt_to_penny(start_date := '2100-01-01');
+----
+0
+
+# cash nulls and units
+query TTT
+SELECT close_today_bal, open_today_bal::VARCHAR, amount_units FROM treasury.main.operating_cash_balance(max_rows := 1);
+----
+NULL	100	USD millions
+
+# deposits filter
+query T
+SELECT count(*) FROM treasury.main.deposits_withdrawals(filters_json := '[{"field":"transaction_type","op":"eq","value":"Deposits"}]', page_size := 1);
+----
+3
+
+# debt transactions
+query T
+SELECT count(*) FROM treasury.main.public_debt_transactions(page_size := 2);
+----
+5
+
+# monthly statement
+query TT
+SELECT count(*), min(amount_units) FROM treasury.main.monthly_statement(page_size := 2);
+----
+5	API currency units
+
+# interest rates
+query TT
+SELECT count(*), min(amount_units) FROM treasury.main.average_interest_rates(page_size := 2);
+----
+5	percent
+
+# raw source values
+query T
+SELECT json_extract_string(record_json, '$.close_today_bal') FROM treasury.main.records('v1/accounting/dts/operating_cash_balance', max_rows := 1);
+----
+null
+
+# unknown endpoint
+statement error
+SELECT * FROM treasury.main.records('v2/accounting/od/missing');
+----
+HTTP 404
+
+# bad filter
+statement error
+SELECT * FROM treasury.main.debt_to_penny(filters_json := '{}');
+----
+array
+
+# reversed dates
+statement error
+SELECT * FROM treasury.main.debt_to_penny(start_date := '2024-02-01', end_date := '2024-01-01');
+----
+must not be after
+
+# invalid date
+statement error
+SELECT * FROM treasury.main.debt_to_penny(start_date := '2024-02-30');
+----
+YYYY-MM-DD
+
+# duplicate sort
+statement error
+SELECT * FROM treasury.main.debt_to_penny(sort_fields := 'record_date,record_date');
+----
+must not repeat
+
+statement ok
+DETACH treasury;

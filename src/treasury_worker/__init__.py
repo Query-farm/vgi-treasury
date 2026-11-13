@@ -1,0 +1,1 @@
+"""VGI treasury worker package."""

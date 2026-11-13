@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "catalog": "treasury",
+  "worker": [
+    ".venv/bin/vgi-treasury-worker"
+  ],
+  "api_base_url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service",
+  "key_required": false,
+  "checks": [
+    {
+      "name": "curated catalog",
+      "sql": "SELECT count(*) FROM treasury.main.datasets()",
+      "rows": [
+        [
+          6
+        ]
+      ]
+    },
+    {
+      "name": "source field metadata",
+      "sql": "SELECT source_type, source_format FROM treasury.main.fields('v2/accounting/od/debt_to_penny') WHERE field_name='tot_pub_debt_out_amt'",
+      "rows": [
+        [
+          "CURRENCY",
+          "$10.20"
+        ]
+      ]
+    },
+    {
+      "name": "exact cents across pages",
+      "sql": "SELECT count(*), sum(tot_pub_debt_out_amt)::VARCHAR FROM treasury.main.debt_to_penny(page_size := 2)",
+      "rows": [
+        [
+          5,
+          "185000000000001.85"
+        ]
+      ]
+    },
+    {
+      "name": "cap across pages",
+      "sql": "SELECT record_date::VARCHAR, tot_pub_debt_out_amt::VARCHAR FROM treasury.main.debt_to_penny(page_size := 2, max_rows := 3) ORDER BY record_date",
+      "rows": [
+        [
+          "2024-01-02",
+          "37000000000000.35"
+        ],
+        [
+          "2024-01-03",
+          "37000000000000.36"
+        ],
+        [
+          "2024-01-04",
+          "37000000000000.37"
+        ]
+      ]
+    },
+    {
+      "name": "date bounds and sort",
+      "sql": "SELECT record_date::VARCHAR FROM treasury.main.debt_to_penny(start_date := '2024-01-03', end_date := '2024-01-05', sort_fields := '-record_date,src_line_nbr', page_size := 1)",
+      "rows": [
+        [
+          "2024-01-05"
+        ],
+        [
+          "2024-01-04"
+        ],
+        [
+          "2024-01-03"
+        ]
+      ]
+    },
+    {
+      "name": "page offset",
+      "sql": "SELECT count(*) FROM treasury.main.debt_to_penny(start_page := 2, page_size := 2)",
+      "rows": [
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "name": "empty date window",
+      "sql": "SELECT count(*) FROM treasury.main.debt_to_penny(start_date := '2100-01-01')",
+      "rows": [
+        [
+          0
+        ]
+      ]
+    },
+    {
+      "name": "cash nulls and units",
+      "sql": "SELECT close_today_bal, open_today_bal::VARCHAR, amount_units FROM treasury.main.operating_cash_balance(max_rows := 1)",
+      "rows": [
+        [
+          null,
+          "100",
+          "USD millions"
+        ]
+      ]
+    },
+    {
+      "name": "deposits filter",
+      "sql": "SELECT count(*) FROM treasury.main.deposits_withdrawals(filters_json := '[{\"field\":\"transaction_type\",\"op\":\"eq\",\"value\":\"Deposits\"}]', page_size := 1)",
+      "rows": [
+        [
+          3
+        ]
+      ]
+    },
+    {
+      "name": "debt transactions",
+      "sql": "SELECT count(*) FROM treasury.main.public_debt_transactions(page_size := 2)",
+      "rows": [
+        [
+          5
+        ]
+      ]
+    },
+    {
+      "name": "monthly statement",
+      "sql": "SELECT count(*), min(amount_units) FROM treasury.main.monthly_statement(page_size := 2)",
+      "rows": [
+        [
+          5,
+          "API currency units"
+        ]
+      ]
+    },
+    {
+      "name": "interest rates",
+      "sql": "SELECT count(*), min(amount_units) FROM treasury.main.average_interest_rates(page_size := 2)",
+      "rows": [
+        [
+          5,
+          "percent"
+        ]
+      ]
+    },
+    {
+      "name": "raw source values",
+      "sql": "SELECT json_extract_string(record_json, '$.close_today_bal') FROM treasury.main.records('v1/accounting/dts/operating_cash_balance', max_rows := 1)",
+      "rows": [
+        [
+          "null"
+        ]
+      ]
+    }
+  ],
+  "error_checks": [
+    {
+      "name": "unknown endpoint",
+      "sql": "SELECT * FROM treasury.main.records('v2/accounting/od/missing')",
+      "message": "HTTP 404"
+    },
+    {
+      "name": "bad filter",
+      "sql": "SELECT * FROM treasury.main.debt_to_penny(filters_json := '{}')",
+      "message": "array"
+    },
+    {
+      "name": "reversed dates",
+      "sql": "SELECT * FROM treasury.main.debt_to_penny(start_date := '2024-02-01', end_date := '2024-01-01')",
+      "message": "must not be after"
+    },
+    {
+      "name": "invalid date",
+      "sql": "SELECT * FROM treasury.main.debt_to_penny(start_date := '2024-02-30')",
+      "message": "YYYY-MM-DD"
+    },
+    {
+      "name": "duplicate sort",
+      "sql": "SELECT * FROM treasury.main.debt_to_penny(sort_fields := 'record_date,record_date')",
+      "message": "must not repeat"
+    }
+  ],
+  "live_checks": [
+    {
+      "name": "live debt_to_penny",
+      "sql": "SELECT count(*) > 0 FROM treasury.main.debt_to_penny(start_date := '2024-01-01', end_date := '2024-01-31', page_size := 2, max_rows := 3)",
+      "rows": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "name": "live operating_cash_balance",
+      "sql": "SELECT count(*) > 0 FROM treasury.main.operating_cash_balance(start_date := '2024-01-01', end_date := '2024-01-31', page_size := 2, max_rows := 3)",
+      "rows": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "name": "live deposits_withdrawals",
+      "sql": "SELECT count(*) > 0 FROM treasury.main.deposits_withdrawals(start_date := '2024-01-01', end_date := '2024-01-31', page_size := 2, max_rows := 3)",
+      "rows": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "name": "live public_debt_transactions",
+      "sql": "SELECT count(*) > 0 FROM treasury.main.public_debt_transactions(start_date := '2024-01-01', end_date := '2024-01-31', page_size := 2, max_rows := 3)",
+      "rows": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "name": "live monthly_statement",
+      "sql": "SELECT count(*) > 0 FROM treasury.main.monthly_statement(start_date := '2024-01-01', end_date := '2024-01-31', page_size := 2, max_rows := 3)",
+      "rows": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "name": "live average_interest_rates",
+      "sql": "SELECT count(*) > 0 FROM treasury.main.average_interest_rates(start_date := '2024-01-01', end_date := '2024-01-31', page_size := 2, max_rows := 3)",
+      "rows": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "name": "live fields",
+      "sql": "SELECT source_type FROM treasury.main.fields('v2/accounting/od/debt_to_penny') WHERE field_name='tot_pub_debt_out_amt'",
+      "rows": [
+        [
+          "CURRENCY"
+        ]
+      ]
+    },
+    {
+      "name": "live records",
+      "sql": "SELECT count(*) > 0 FROM treasury.main.records('v1/accounting/mts/mts_table_9', start_date := '2024-01-01', end_date := '2024-01-31', page_size := 2, max_rows := 3)",
+      "rows": [
+        [
+          true
+        ]
+      ]
+    },
+    {
+      "name": "local catalog",
+      "sql": "SELECT count(*) FROM treasury.main.datasets()",
+      "rows": [
+        [
+          6
+        ]
+      ]
+    }
+  ]
+}

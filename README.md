@@ -1,314 +1,178 @@
-<!-- managed-by: vgi-starters (edit upstream in shared/README.md.tmpl, then run tools/render.py) -->
-<p align="center">
-  <img src="https://query.farm/media-kit/products/vgi/vgi-logo.png" alt="Vector Gateway Interface (VGI)" width="320">
-</p>
+# vgi-treasury
 
-<p align="center"><em>A Query.Farm VGI worker for DuckDB, written in Python.</em></p>
+Query public US Treasury Fiscal Data from DuckDB through a Python VGI worker.
+Exact decimal amounts, source units and complete original records are retained.
 
-# VGI Starter Worker — Python
+## Install and query
 
-[![CI](https://github.com/Query-farm/vgi-starter-python/actions/workflows/ci.yml/badge.svg)](https://github.com/Query-farm/vgi-starter-python/actions/workflows/ci.yml)
-[![vgi worker: query.farm](https://query.farm/media-kit/shields/vgi-worker.svg)](https://query.farm)
-
-[VGI](https://query.farm/vgi) lets DuckDB call functions that live in a separate
-process: your code, in any language, exposed as ordinary SQL. This worker adds
-three example functions that you rename and replace with your own:
-
-| Function | Kind | Shows you how to |
-|---|---|---|
-| `greet(name)` / `greet(name, style)` | scalar | vectorize over a column, overload, constrain a constant |
-| `sequence_table(count, step := 1)` | table | stream rows in batches, take named arguments |
-| `fetch_items(base_url, page_size := 100)` | table | page through a REST API, retry, read a secret |
-
-<!-- template-only:start -->
-## Use this template
-
-This repository is a **template**. Click **Use this template** on GitHub, or:
-
-```bash
-gh repo create my-org/weather-worker --template Query-farm/vgi-starter-python --private --clone
-cd weather-worker
-make init NAME=weather     # renames catalog, package, binary, env vars; removes this section
-make check                 # lint + tests over every transport + metadata score
-```
-
-Prefer to work with an AI coding agent? `make init` first, then hand it
-[AGENTS.md](AGENTS.md). See [Using with coding agents](#using-with-coding-agents).
-
-Starters exist for [Python](https://github.com/Query-farm/vgi-starter-python),
-[TypeScript](https://github.com/Query-farm/vgi-starter-typescript),
-[Go](https://github.com/Query-farm/vgi-starter-go),
-[Rust](https://github.com/Query-farm/vgi-starter-rust),
-[Java](https://github.com/Query-farm/vgi-starter-java) and
-[C#](https://github.com/Query-farm/vgi-starter-csharp). They are generated from
-[Query-farm/vgi-starters](https://github.com/Query-farm/vgi-starters); send
-changes there.
-<!-- template-only:end -->
-
-## Quick start
-
-**Prerequisites:** Python 3.13+ and [uv](https://docs.astral.sh/uv/) (it runs the SQL
-test runner and the metadata checker).
-
-```bash
-make build
-```
-
-Then open DuckDB 2.0 or [Haybarn](https://query.farm/products/haybarn) and attach the
-worker. `LOCATION` is the command DuckDB runs to start it; use an absolute path,
-because a relative one resolves against DuckDB's working directory.
-
-**DuckDB 2.0:**
+Requires Python 3.13 or newer. Install a wheel from GitHub Releases, or run
+`make build` in the locked source checkout.
 
 ```sql
 SET allow_extension_repositories = 'allowed';
-CREATE EXTENSION REPOSITORY IF NOT EXISTS query_farm WITH PREFIX 'https://duckdb-extensions.query.farm';
+CREATE EXTENSION REPOSITORY IF NOT EXISTS query_farm
+    WITH PREFIX 'https://duckdb-extensions.query.farm';
 INSTALL vgi FROM query_farm;
 LOAD vgi FROM query_farm;
-ATTACH 'starter' (TYPE vgi, LOCATION '/abs/path/to/vgi-starter-python/.venv/bin/vgi-starter-worker');
+ATTACH 'treasury' (TYPE vgi, LOCATION '/absolute/path/to/.venv/bin/vgi-treasury-worker');
+
+SELECT record_date, tot_pub_debt_out_amt, amount_units
+FROM treasury.main.debt_to_penny(start_date := '2024-01-01', end_date := '2024-01-31')
+ORDER BY record_date;
+
+SELECT dataset, endpoint, amount_units
+FROM treasury.main.datasets() ORDER BY dataset;
 ```
 
-**Haybarn 2.0** (`uvx haybarn-cli`):
+The official Fiscal Data API is public and requires no upstream API key. HTTP
+worker authentication is configured separately, as described below.
+
+## Functions
+
+All functions are in `treasury.main`. SQL NULL arguments are rejected.
+
+| Function | Source and purpose |
+| --- | --- |
+| `datasets(query := '')` | Local catalog of six typed datasets; optional case-insensitive substring search |
+| `fields(endpoint)` | Live field labels, source types and format descriptors |
+| `records(endpoint, ...)` | Original JSON rows from any valid relative Fiscal Data v1/v2 endpoint |
+| `debt_to_penny(...)` | Total public debt, debt held by the public and intragovernmental holdings |
+| `operating_cash_balance(...)` | Daily Treasury Statement operating cash accounts |
+| `deposits_withdrawals(...)` | Daily deposits and withdrawals by source classification |
+| `public_debt_transactions(...)` | Daily public debt issues, redemptions and net changes |
+| `monthly_statement(...)` | Monthly Treasury Statement Table 1 rows and hierarchy |
+| `average_interest_rates(...)` | Interest rates by debt security description |
+
+`datasets()` is a curated catalog, not an exhaustive upstream endpoint listing.
+Use `fields()` and `records()` for other documented Fiscal Data endpoints.
+
+Typed data functions and `records()` accept these named arguments:
+
+| Argument | Default | Meaning |
+| --- | --- | --- |
+| `start_date`, `end_date` | `''` | Inclusive `record_date` bounds in YYYY-MM-DD format |
+| `filters_json` | `'[]'` | Array of field/op/value objects; operators eq, lt, lte, gt, gte, in |
+| `sort_fields` | `'record_date,src_line_nbr'` | Comma-separated fields; `-` prefix selects descending order |
+| `page_size` | `1000` | Fixed source page size, 1–1000 |
+| `max_rows` | `0` | Explicit output cap up to 10 million; zero streams all matches |
+| `start_page` | `1` | One-based starting page using the chosen page size |
 
 ```sql
-INSTALL vgi FROM community;
-LOAD vgi;
-ATTACH 'starter' (TYPE vgi, LOCATION '/abs/path/to/vgi-starter-python/.venv/bin/vgi-starter-worker');
+SELECT record_date, transaction_type, transaction_catg, transaction_today_amt
+FROM treasury.main.deposits_withdrawals(
+    start_date := '2024-01-01', end_date := '2024-01-31',
+    filters_json := '[{"field":"transaction_type","op":"eq","value":"Deposits"}]')
+ORDER BY record_date, src_line_nbr;
+
+SELECT field_name, source_type, source_format
+FROM treasury.main.fields('v1/accounting/mts/mts_table_9') ORDER BY field_name;
+
+SELECT record_date, record_json
+FROM treasury.main.records('v1/accounting/mts/mts_table_9',
+    start_date := '2024-01-01', end_date := '2024-01-31', max_rows := 10)
+ORDER BY record_date;
 ```
 
-Now call the functions:
+Filter values are strings or integers; `in` takes an array. Delimiter characters,
+duplicate JSON keys and unsupported operators fail before requesting data. Generic
+endpoints may require a different `sort_fields` value. Include keys that uniquely
+order records. Function arguments are pushed upstream; SQL WHERE clauses are local.
+
+## Values, units and completeness
+
+- Currency uses DECIMAL(38,2), whole-million DTS amounts use DECIMAL(38,0), and
+  interest rates use DECIMAL(38,6). Conversion never rounds excess precision or
+  passes through floating point. Rates remain percentages, not fractions.
+- Debt-to-the-penny amounts are USD. Daily Treasury Statement amounts are USD
+  millions. `amount_units` records the scale; values are not multiplied or rescaled.
+- Monthly statement API fields are preserved as raw **API currency units**. The
+  Treasury website describes display values in millions, while API responses can
+  contain unscaled currency amounts. Inspect `fields()` and `source_json` when
+  reconciling API output with published reports; the worker does not infer a conversion.
+- Source `"null"` and JSON null become SQL NULL. Every typed row also has
+  `source_json`, retaining exact original strings and every field. Generic rows use
+  `record_json`. Missing declared fields, invalid values and schema drift fail.
+- `record_date` is a source record/report date. Monthly statement classifications,
+  hierarchy and source period fields are retained; do not treat every row as an
+  independent monthly observation or sum headers and subtotals together. Cash
+  balance account definitions have changed over time; nullable closing-balance
+  fields are preserved without inferring replacements from other accounts.
+- Each API page becomes one Arrow batch. Page size remains fixed even when the
+  output cap ends partway through a page. Counts, page numbers, repeated pages and
+  source total changes are checked. Inconsistent or partial pages fail visibly.
+- An explicit `max_rows` cap intentionally returns a prefix. SQL LIMIT alone is
+  not an upstream cap. Separate requests are not an atomic snapshot; equal-count
+  concurrent revisions cannot always be detected. Use historical date windows,
+  deterministic sorting and bounded queries for reproducible extracts.
+
+## HTTP authentication and deployment
+
+```sh
+export VGI_BEARER_TOKENS="$(openssl rand -hex 32)=analyst"
+vgi-treasury-worker --http --host 127.0.0.1 --port 8000
+```
+
+Store persistent tokens in your secret manager. Tokens contain 32–4096 characters;
+multiple principals use `token1=principal1,token2=principal2`. Empty or malformed
+configuration fails startup without exposing its contents. Omitting the variable
+leaves HTTP unauthenticated for local development. Each principal can access the
+whole catalog, and `/health` remains public. Terminate TLS at your service ingress.
 
 ```sql
-SELECT starter.main.greet('Ada');                         -- Hi, Ada!
-SELECT starter.main.greet('Ada', 'formal');               -- Good day, Ada.
-SELECT * FROM starter.main.sequence_table(5, step := 2) ORDER BY n;
+INSTALL httpfs FROM core;
+LOAD httpfs;
+ATTACH 'treasury' (TYPE vgi, LOCATION 'https://your-worker.example',
+                   bearer_token 'your-worker-bearer-token');
 ```
 
-`fetch_items` pages through a REST API. Try it against the public demo API (25 fixed items):
+Bearer tokens never go to Treasury. Continuation state contains only counters and
+page digests. Worker stdout is reserved for Arrow RPC. A nonroot Docker image is
+defined in `Dockerfile`; build with `docker build -t vgi-treasury .` and supply
+secrets through your deployment platform. HTTP uses port 8000; `docker run -i
+vgi-treasury stdio` selects stdio.
 
-```sql
-SELECT category, count(*) AS items, round(avg(price), 2) AS avg_price
-FROM starter.main.fetch_items('https://vgi-starter-api.query-farm.services/v1')
-GROUP BY category ORDER BY category;
+## Operations
+
+| Environment variable | Default |
+| --- | --- |
+| `TREASURY_TIMEOUT_SECONDS` | 30 (0.1–120) |
+| `TREASURY_MAX_ATTEMPTS` | 4 (1–6) |
+| `TREASURY_RETRY_BUDGET_SECONDS` | 120 (1–600) |
+| `TREASURY_MIN_INTERVAL_SECONDS` | 0.5 |
+| `TREASURY_MAX_RESPONSE_BYTES` | 16777216 (1 KiB–64 MiB) |
+| `TREASURY_API_BASE_URL` | `https://api.fiscaldata.treasury.gov/services/api/fiscal_service` |
+| `TREASURY_ALLOW_INSECURE_HTTP` | unset; `1` permits loopback fixture HTTP only |
+
+Network failures, 429 and 5xx responses use bounded backoff with jitter.
+`Retry-After` is honored; a wait exceeding the retry budget fails without retrying
+early. Redirects are refused. Request spacing is process-local; coordinate quotas
+across replicas. The read budget is checked between chunks; blocking socket work
+can extend wall time by its timeout. Responses have a byte limit, and there is no
+persistent cache. API base URLs are trusted operator settings. Standard Python
+TLS verification is enabled; configure `SSL_CERT_FILE` with your approved CA
+bundle when your environment needs a custom trust store. Environment files are
+not loaded automatically.
+
+## Verification and releases
+
+```sh
+make check          # Static checks, pytest, three SQL transports, metadata, stock DuckDB
+make smoke-live     # Official public Fiscal Data API checks
+make package        # Wheel and source distribution
+uvx twine check dist/*
+python3 ci/verify-artifacts.py --python 3.13
+make lint-ai        # Optional external-agent metadata evaluation
 ```
 
-If an older cached extension misbehaves, refresh it with `FORCE INSTALL vgi FROM query_farm;`
-(DuckDB) or `FORCE INSTALL vgi FROM community;` (Haybarn).
+Metadata assurance uses local fixtures and retains strict `fail_on = "info"`
+without waivers. Stock DuckDB checks include missing/wrong bearer rejection and
+multi-page authenticated HTTP queries. Wheel and source installs are checked
+outside the source checkout. See [VERIFICATION.md](VERIFICATION.md) for measured
+results and limitations. CI gates releases, signs artifacts with Sigstore, and
+attests wheel provenance. Upstream data licensing remains separate from this
+worker's 0BSD software license.
 
-## Using it in a pipeline
-
-Worker functions compose with everything else in DuckDB:
-
-```sql
--- Materialize an API into a local table.
-CREATE TABLE items AS SELECT * FROM starter.main.fetch_items('https://vgi-starter-api.query-farm.services/v1');
-
--- Join it with local files.
-SELECT i.name, i.price, s.units
-FROM items i JOIN 'sales.parquet' s ON s.item_id = i.id;
-
--- Call a scalar per row of another table.
-SELECT customer, starter.main.greet(customer, 'formal') FROM read_csv('customers.csv');
-```
-
-## Project layout
-
-```
-src/starter_worker/
-  worker.py        # assembles the catalog; add new functions to FUNCTIONS
-  meta.py          # catalog/schema metadata + helpers (object_tags, column)
-  greet.py         # scalar example (overloads, ConstParam choices)
-  sequence.py      # table function example (named args, streaming state)
-  fetch_items.py   # REST API table function (pagination, retries, secrets)
-tests/             # pytest unit tests (in-process client)
-test/sql/          # sqllogictest files run through DuckDB
-test/mock_api/     # offline mock of the REST API used by tests
-examples/          # recipes: pushdown, caching, catalog tables, aggregates, COPY …
-ci/                # integration harness used by `make test-sql` and CI
-scripts/           # vgi_template.py (init / template-diff)
-vgi-agent-tests.yaml  # private graders for the agent test tasks
-```
-
-## Adding a function
-
-1. Create `src/starter_worker/<name>.py`. Copy the closest example: `greet.py` for a
-   scalar, `sequence.py` for a generator, `fetch_items.py` for an API.
-2. Declare arguments with `Annotated[..., Param(...)]`/`ConstParam(...)` (scalars) or a
-   frozen dataclass of `Annotated[..., Arg(...)]` (table functions). Use `Arg(0, ...)`
-   for positional arguments and `Arg("name", default=...)` for named ones.
-3. Give the class a `class Meta` with `name`, `description`, `tags=object_tags(...)`
-   and `examples`.
-4. Add the class to `FUNCTIONS` in `src/starter_worker/worker.py`.
-
-**Which kind of function?**
-
-| You want to… | Use |
-|---|---|
-| compute one value per input row | a **scalar** function |
-| return a set of rows from arguments (an API, a file, a generator) | a **table** function |
-| transform or aggregate the rows of a query | a **table in-out** function or an **aggregate** |
-| expose a fixed dataset by name (`SELECT * FROM starter.main.t`) | a **catalog table** |
-| write data out to a file or service | `COPY … TO` with a copy function |
-| accept `INSERT` / `UPDATE` / `DELETE` | a catalog table with insert/update/delete functions |
-
-The [examples/](examples/) folder has a recipe for most of these. Writable tables have no
-recipe:
-
-A writable table is a catalog `Table` that names a table in-out function per operation in
-`insert_function`, `update_function` and `delete_function`, with the richest result each one
-produces in `write_result_modes`. The helpers in `vgi.write_results` (`write_options`,
-`write_result_schema`, `write_result_batch`, `row_id_field`) read DuckDB's `write_options`
-argument and build the result. UPDATE and DELETE need a scan function that emits
-`row_id_field()` and declares projection pushdown. Transactions: override `attach_supports_transactions`
-and `catalog_transaction_begin` / `_commit` / `_rollback` on the catalog. Since VGI protocol 3.3
-a table's scan and write functions are table-only: hidden from `duckdb_functions()` and not
-callable from SQL. Set `expose_scan=True` on the table to keep the scan callable as an ordinary
-table function too (write functions never are). See
-[Writable tables](https://github.com/Query-farm/vgi-python/blob/main/docs/catalog-interface.md#writable-tables)
-in the vgi-python docs.
-
-## Secrets and configuration
-
-`fetch_items` shows the recommended pattern. A bearer token comes from a DuckDB secret
-when one exists, and from an environment variable otherwise:
-
-```sql
-CREATE SECRET (TYPE starter_api, TOKEN 'your-token');      -- per session, never logged
-```
-
-```bash
-STARTER_API_TOKEN=your-token make run-http                # for servers and containers
-```
-
-Try it: the demo API's `/v1/auth` endpoint needs the published token `demo-token`.
-
-```sql
-SELECT count(*) FROM starter.main.fetch_items('https://vgi-starter-api.query-farm.services/v1/auth');   -- fails: HTTP 401
-CREATE SECRET (TYPE starter_api, TOKEN 'demo-token');
-SELECT count(*) FROM starter.main.fetch_items('https://vgi-starter-api.query-farm.services/v1/auth');   -- 25
-```
-
-Never bake credentials into the image or the source. If a function can't run without
-real credentials, its examples can't execute in CI either. Set `execute: false` on the
-metadata check for that worker (see `.github/workflows/ci.yml`), and add
-`LINT_ARGS ?= --no-execute` to the Makefile so local runs match.
-
-## Testing
-
-```bash
-make test-unit                 # fast Python unit tests
-make test-sql                  # test/sql/*.test through DuckDB (stdio)
-make test-sql TRANSPORT=http   # …over HTTP (also: launch)
-make check                     # everything CI runs
-```
-
-`test/sql/*.test` files are [sqllogictest](https://duckdb.org/docs/stable/dev/sqllogictest/intro)
-scripts. `ci/run-integration.sh` runs them against your worker and fails on any
-unexpected skip, so a broken transport can't hide behind a green run.
-`fetch_items` is tested against `test/mock_api/server.py` so tests are fast and
-offline.
-
-**Testing against real data:** put live tests in their own `.test` file that starts with
-`require-env STARTER_LIVE`. They run only when that variable is set. Add the skip reason
-to `EXPECTED_SKIP_REASONS` in CI.
-
-## Metadata and the quality score
-
-DuckDB, agents and documentation tools discover your functions through their metadata:
-titles, descriptions, argument docs, examples and keywords.
-[vgi-lint](https://github.com/Query-farm/vgi-lint-check) checks it, and CI runs it on
-every push. Its settings live in `vgi-lint.toml`, which `make lint-explain`,
-`vgi-lint lint`, and CI all read. This template scores 100/100 with no findings.
-
-```bash
-make lint-explain                              # findings, each with its fix
-make lint-explain LINT_ARGS="--format agent"   # the same, grouped for coding agents
-make lint-ai                                   # optional: an agent must solve vgi-agent-tests.yaml
-```
-
-Each report also states an **assurance level**: how much was actually verified.
-
-| Level | Reached when | Here |
-|---|---|---|
-| L1 structural | the static metadata is clean | workers that need real credentials (`execute: false` in CI) |
-| L2 behavioural | the examples also run and return what they claim | **the CI gate** |
-| L3 semantic | an agent solves the worker's own test tasks, and the docs are reviewed | `make lint-ai`, before publishing |
-
-- **How strict.** Your copy fails on warnings (`fail_on = "warning"` in `vgi-lint.toml`).
-  Raise it to `"info"` before you publish the worker for others.
-- **The linter isn't pinned.** It tracks the current quality bar, so a new rule can flag
-  metadata that passed yesterday. Fix it, or waive the finding.
-- **Waivers.** If a finding is genuinely wrong for your worker, waive it in
-  `vgi-lint.toml` with a `kind` and a `reason`.
-- **Existing workers.** If you're adding this gate to a worker that already has
-  findings, record them with `vgi-lint lint --baseline vgi-lint-baseline --update-baseline`
-  and set `baseline` in `vgi-lint.toml`. After that, only new findings fail.
-
-Metadata lives in `src/starter_worker/meta.py` and each function's `class Meta`.
-
-## Logging and debugging
-
-stdout carries the Arrow protocol, so **never print to stdout**. Log to stderr instead.
-Use the standard `logging` module (the SDK routes it to stderr); `--debug` or `--log-level DEBUG` turns it up.
-
-- Under DuckDB (stdio/launch), worker stderr shows up in DuckDB's error messages and
-  terminal.
-- In Docker it goes to `docker logs`.
-- `make debug` runs one query against the worker with debug logging on.
-
-## Deploying
-
-The same binary serves stdio (DuckDB starts it locally) or HTTP (you host it):
-
-```bash
-docker build -t weather-worker .
-docker run -p 8000:8000 -e STARTER_API_TOKEN=... weather-worker   # health: GET /health
-```
-
-```sql
-ATTACH 'starter' (TYPE vgi, LOCATION 'https://workers.example.com/starter');
-```
-
-Put hosted workers behind TLS and authentication. See
-[authentication](https://query.farm/vgi/authentication) for bearer tokens and JWTs, and
-[distributing a worker](https://query.farm/vgi/distributing-a-worker) for packaging.
-Pass secrets with `-e` or your platform's secret manager.
-
-## Releasing
-
-Push a tag like `v0.1.0`. The release workflow builds the wheel and sdist, attaches them to the GitHub release, and (if you set the repository variable `PYPI_PUBLISH=true` and configure PyPI Trusted Publishing) publishes to PyPI, so users can run `uvx vgi-starter-worker`. Without PyPI, users install straight from the repo with `uvx --from git+https://github.com/Query-farm/vgi-starter-python@v0.1.0 vgi-starter-worker`. Every artifact is signed with cosign and
-carries SLSA build provenance. `ci/check-version.sh` makes sure the tag matches the
-version in `pyproject.toml`.
-
-## Using with coding agents
-
-[AGENTS.md](AGENTS.md) is written for AI coding agents (Claude Code reads it via
-`CLAUDE.md`; Codex, Cursor and others read it directly). It covers the commands, the
-recipe for adding a function, the metadata checklist and the sharp edges. A good first
-prompt:
-
-> Read AGENTS.md. Replace `fetch_items` with `forecast(lat DOUBLE, lon DOUBLE)` that calls
-> the Open-Meteo API. Include full metadata, a mock-server test and a `STARTER_LIVE` test.
-> You're done when `make check` passes.
-
-## Keeping up with the template
-
-`make template-diff` shows what changed upstream (CI, docs, examples) since your copy was
-made. Your copy records its template version in `.vgi-starter.json`.
-
-## Learn more
-
-- [What is VGI?](https://query.farm/vgi) · [Getting started](https://query.farm/vgi/getting-started) · [Building a worker](https://query.farm/vgi/building-a-worker)
-- [Python SDK docs](https://query.farm/vgi/docs/python/): [scalar tutorial](https://query.farm/vgi/docs/python/tutorial/scalar/), [table tutorial](https://query.farm/vgi/docs/python/tutorial/table/)
-- [Distributing a worker](https://query.farm/vgi/distributing-a-worker) · [Choosing a language](https://query.farm/vgi/languages) · [llms.txt](https://query.farm/vgi/llms.txt)
-- SDK source: [vgi-python](https://github.com/Query-farm/vgi-python) · RPC layer: [https://vgi-rpc-python.query.farm](https://vgi-rpc-python.query.farm)
-
-## Support
-
-Open an issue on this repository. For VGI itself, see [query.farm](https://query.farm).
-
-## Authorship & license
-
-The starter template is written by [Query.Farm](https://query.farm) and released under
-the [BSD Zero Clause License](LICENSE) (0BSD). Use it for anything, with no attribution
-required. Replace this section with your own license once the code is yours.
+Sources: [Fiscal Data API documentation](https://fiscaldata.treasury.gov/api-documentation/),
+[Debt to the Penny](https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/),
+[Daily Treasury Statement](https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/),
+[Monthly Treasury Statement](https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/).
