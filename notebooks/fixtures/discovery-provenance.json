@@ -1,0 +1,100 @@
+{
+  "provenance": "Original official public Treasury Fiscal Data response bytes, not synthetic data. Each request has fixed historical bounds and deterministic source-line sorting. Separate requests/pages are not atomic. No credentials required.",
+  "captures": [
+    {
+      "name": "cash",
+      "endpoint": "v1/accounting/dts/operating_cash_balance",
+      "request_parameters": {
+        "filter": "record_date:gte:2024-01-08,record_date:lte:2024-01-12",
+        "sort": "record_date,src_line_nbr",
+        "page[size]": "1000",
+        "page[number]": "1",
+        "format": "json"
+      },
+      "captured_at_utc": "2026-11-14T22:46:07.761354+00:00",
+      "http_status": 200,
+      "file": "cash-2024-page-1.json",
+      "sha256": "d7685eac82c5401e8913e56b5107e5a67e602bb8b5ac7a5b089a4117c04d93d5",
+      "rows": 20,
+      "total_rows": 20,
+      "coverage_start": "2024-01-08",
+      "coverage_end": "2024-01-12"
+    },
+    {
+      "name": "deposits",
+      "endpoint": "v1/accounting/dts/deposits_withdrawals_operating_cash",
+      "request_parameters": {
+        "filter": "record_date:gte:2024-01-08,record_date:lte:2024-01-12",
+        "sort": "record_date,src_line_nbr",
+        "page[size]": "1000",
+        "page[number]": "1",
+        "format": "json"
+      },
+      "captured_at_utc": "2026-11-14T22:46:08.381076+00:00",
+      "http_status": 200,
+      "file": "deposits-2024-page-1.json",
+      "sha256": "06dd48ba382d731fe989a9ffa0c0137cd466961645fa05fbfa8f5ceac618aef8",
+      "rows": 905,
+      "total_rows": 905,
+      "coverage_start": "2024-01-08",
+      "coverage_end": "2024-01-12"
+    },
+    {
+      "name": "transactions",
+      "endpoint": "v1/accounting/dts/public_debt_transactions",
+      "request_parameters": {
+        "filter": "record_date:gte:2024-01-08,record_date:lte:2024-01-12",
+        "sort": "record_date,src_line_nbr",
+        "page[size]": "1000",
+        "page[number]": "1",
+        "format": "json"
+      },
+      "captured_at_utc": "2026-11-14T22:46:08.809848+00:00",
+      "http_status": 200,
+      "file": "transactions-2024-page-1.json",
+      "sha256": "f85d96a1a977cfee2571d816173afecaabdeb1821c100017b5465eff37f85f82",
+      "rows": 115,
+      "total_rows": 115,
+      "coverage_start": "2024-01-08",
+      "coverage_end": "2024-01-12"
+    },
+    {
+      "name": "monthly",
+      "endpoint": "v1/accounting/mts/mts_table_1",
+      "request_parameters": {
+        "filter": "record_date:gte:2024-01-31,record_date:lte:2024-02-29",
+        "sort": "record_date,src_line_nbr",
+        "page[size]": "1000",
+        "page[number]": "1",
+        "format": "json"
+      },
+      "captured_at_utc": "2026-11-14T22:46:09.142929+00:00",
+      "http_status": 200,
+      "file": "monthly-2024-page-1.json",
+      "sha256": "24c4a234829fe3e68788b62d37ffa5f2c0f25f46552184b3656a8fc4bd46ae2c",
+      "rows": 41,
+      "total_rows": 41,
+      "coverage_start": "2024-01-31",
+      "coverage_end": "2024-02-29"
+    },
+    {
+      "name": "rates",
+      "endpoint": "v2/accounting/od/avg_interest_rates",
+      "request_parameters": {
+        "filter": "record_date:gte:2024-01-31,record_date:lte:2024-02-29",
+        "sort": "record_date,src_line_nbr",
+        "page[size]": "1000",
+        "page[number]": "1",
+        "format": "json"
+      },
+      "captured_at_utc": "2026-11-14T22:46:09.481824+00:00",
+      "http_status": 200,
+      "file": "rates-2024-page-1.json",
+      "sha256": "d2257dc09d13b24204fb20d8b1d70b35807bfeab74092580d04fb658f55ef688",
+      "rows": 34,
+      "total_rows": 34,
+      "coverage_start": "2024-01-31",
+      "coverage_end": "2024-02-29"
+    }
+  ]
+}
