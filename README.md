@@ -176,3 +176,7 @@ Sources: [Fiscal Data API documentation](https://fiscaldata.treasury.gov/api-doc
 [Debt to the Penny](https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/),
 [Daily Treasury Statement](https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/),
 [Monthly Treasury Statement](https://fiscaldata.treasury.gov/datasets/monthly-treasury-statement/).
+
+## Executable notebook
+
+[Debt components and report changes](notebooks/README.md) reconciles exact USD amounts, explains adjacent-report changes, and includes a recorded public response plus explicit live validation.

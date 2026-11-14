@@ -1,0 +1,17 @@
+{
+  "data_mode": "Recorded public API response, not synthetic data.",
+  "source": "US Treasury Fiscal Data / Debt to the Penny",
+  "endpoint": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny",
+  "request_parameters": {
+    "filter": "record_date:gte:2024-01-02,record_date:lte:2024-01-31",
+    "sort": "record_date",
+    "page[size]": "100"
+  },
+  "captured_at_utc": "2026-11-14T10:21:30.082156+00:00",
+  "http_status": 200,
+  "rows": 21,
+  "sha256": "3abeb91377615e82df11cba31777930d8efb6abc26830e86b43d3f395cd8c334",
+  "coverage_start": "2024-01-02",
+  "coverage_end": "2024-01-31",
+  "notes": "Original JSON bytes retained, including exact currency strings, metadata and links. Replay filters/re-paginates these recorded rows through supported local API override; paging envelopes are generated locally. No automatic live fallback."
+}
