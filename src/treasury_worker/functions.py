@@ -53,7 +53,7 @@ TGA_SHARE_OF_DEBT_SQL = (
 TGA_SHARE_OF_DEBT = FunctionExample(
     sql=TGA_SHARE_OF_DEBT_SQL,
     description=(
-        "Compare the Treasury General Account closing cash balance (operating_cash_balance; since 2022 the "
+        "Compare the Treasury General Account closing cash balance (operating_cash_balance; since April 2022 the "
         "closing balance is the open_today_bal of the Closing Balance row, in USD millions) with total public "
         "debt outstanding (debt_to_penny) for each business day, as a percentage of debt"
     ),
@@ -61,14 +61,15 @@ TGA_SHARE_OF_DEBT = FunctionExample(
 LABELLED_RECORD_SQL = (
     "SELECT f.field_name, f.label, f.source_type, r.record_json ->> f.field_name AS source_value FROM "
     "treasury.main.records('v1/accounting/mts/mts_table_9', start_date := '2024-01-31', end_date := "
-    "'2024-01-31', max_rows := 1) AS r CROSS JOIN treasury.main.fields('v1/accounting/mts/mts_table_9') AS f "
-    "ORDER BY f.field_name"
+    "'2024-01-31', page_size := 1, start_page := 2, max_rows := 1) AS r CROSS JOIN "
+    "treasury.main.fields('v1/accounting/mts/mts_table_9') AS f ORDER BY f.field_name"
 )
 LABELLED_RECORD = FunctionExample(
     sql=LABELLED_RECORD_SQL,
     description=(
-        "Label every field of one raw record from an uncurated endpoint (Monthly Treasury Statement Table 9): "
-        "fields() supplies each source field's label and type, records() the original JSON value as text"
+        "Label every field of one raw record from an uncurated endpoint (the second line of Monthly Treasury "
+        "Statement Table 9 for January 2024, Individual Income Taxes): fields() supplies each source field's "
+        "label and type, records() the original JSON value as text"
     ),
 )
 
