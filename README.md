@@ -201,3 +201,5 @@ Sources: [Fiscal Data API documentation](https://fiscaldata.treasury.gov/api-doc
 ## Executable notebook
 
 [Debt components and report changes](notebooks/README.md) reconciles exact USD amounts, explains adjacent-report changes, and includes a recorded public response plus explicit live validation.
+
+The [notebook index](notebooks/README.md) also covers daily cash-flow boundaries and monthly hierarchy/rate interpretation with recorded public data, release launchers and separate parameter experiments.

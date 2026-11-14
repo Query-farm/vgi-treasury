@@ -1,0 +1,48 @@
+{
+  "query": "SELECT * FROM duckdb_databases() WHERE database_name='treasury'",
+  "columns": [
+    "database_name",
+    "database_oid",
+    "path",
+    "comment",
+    "tags",
+    "internal",
+    "type",
+    "readonly",
+    "encrypted",
+    "cipher",
+    "options"
+  ],
+  "rows": [
+    [
+      "treasury",
+      22592,
+      null,
+      "# vgi-treasury\n\nQuery federal debt, operating cash, deposits, withdrawals and public debt transactions, and discover Fiscal Data endpoint fields. Treasury Fiscal Data is public and needs no upstream API key. Dates and currency amounts are typed, including exact decimals. Use date arguments and filters_json to reduce upstream work. page_size controls request size and max_rows=0 retrieves all matches. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.\n\nQueries use bounded HTTP responses and retries. Credentials stay out of continuation state. See README.md for deployment and operational limits.",
+      {
+        "vgi.agent_test_tasks": "[{\"name\": \"datasets\", \"prompt\": \"Using treasury.main.datasets, discover fiscal datasets. Use the arguments in this example and return the same columns: SELECT dataset, endpoint, amount_units FROM treasury.main.datasets() ORDER BY dataset\"}, {\"name\": \"fields\", \"prompt\": \"Using treasury.main.fields, inspect endpoint fields. Use the arguments in this example and return the same columns: SELECT field_name, source_type, source_format FROM treasury.main.fields('v2/accounting/od/debt_to_penny') ORDER BY field_name\"}, {\"name\": \"records\", \"prompt\": \"Using treasury.main.records, read arbitrary fiscal records. Use the arguments in this example and return the same columns: SELECT record_date, record_json FROM treasury.main.records('v2/accounting/od/debt_to_penny', start_date := '2024-01-02', end_date := '2024-01-03') ORDER BY record_date\"}, {\"name\": \"debt_to_penny\", \"prompt\": \"Using treasury.main.debt_to_penny, federal debt to the penny. Use the arguments in this example and return the same columns: SELECT record_date, tot_pub_debt_out_amt FROM treasury.main.debt_to_penny(start_date := '2024-01-02', end_date := '2024-01-03') ORDER BY record_date\"}, {\"name\": \"operating_cash_balance\", \"prompt\": \"Using treasury.main.operating_cash_balance, operating cash balance. Use the arguments in this example and return the same columns: SELECT record_date, account_type, open_today_bal FROM treasury.main.operating_cash_balance(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY record_date, src_line_nbr\"}, {\"name\": \"deposits_withdrawals\", \"prompt\": \"Using treasury.main.deposits_withdrawals, cash deposits and withdrawals. Use the arguments in this example and return the same columns: SELECT transaction_type, transaction_catg, transaction_today_amt FROM treasury.main.deposits_withdrawals(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY src_line_nbr\"}, {\"name\": \"public_debt_transactions\", \"prompt\": \"Using treasury.main.public_debt_transactions, public debt transactions. Use the arguments in this example and return the same columns: SELECT transaction_type, security_type, transaction_today_amt FROM treasury.main.public_debt_transactions(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY src_line_nbr\"}, {\"name\": \"monthly_statement\", \"prompt\": \"Using treasury.main.monthly_statement, monthly treasury receipts and outlays. Use the arguments in this example and return the same columns: SELECT classification_desc, current_month_gross_rcpt_amt, current_month_gross_outly_amt FROM treasury.main.monthly_statement(start_date := '2024-01-31', end_date := '2024-01-31') WHERE data_type_cd='D' ORDER BY src_line_nbr\"}, {\"name\": \"average_interest_rates\", \"prompt\": \"Using treasury.main.average_interest_rates, average interest rates. Use the arguments in this example and return the same columns: SELECT security_desc, avg_interest_rate_amt FROM treasury.main.average_interest_rates(start_date := '2024-01-31', end_date := '2024-01-31') ORDER BY security_desc\"}, {\"name\": \"weekly_debt_reconciliation\", \"prompt\": \"Using the Treasury worker, compare two measures for the week of 2024-01-08 to 2024-01-12: the Daily Treasury Statement's net public debt issuance (all Issues minus all Redemptions across every security type, summed over those five business days) and the change in total public debt outstanding from its 2024-01-05 value to its 2024-01-12 value. Return one row with exactly the columns net_issuance_musd and debt_change_musd, both in whole USD millions as BIGINT (round the debt change to the nearest million).\"}]",
+        "vgi.author": "Query.Farm",
+        "vgi.copyright": "Copyright 2026 Query.Farm contributors",
+        "vgi.doc_llm": "Query federal debt, operating cash, deposits, withdrawals and public debt transactions, and discover Fiscal Data endpoint fields. Treasury Fiscal Data is public and needs no upstream API key. Dates and currency amounts are typed, including exact decimals. Use date arguments and filters_json to reduce upstream work. page_size controls request size and max_rows=0 retrieves all matches. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "# vgi-treasury\n\nQuery federal debt, operating cash, deposits, withdrawals and public debt transactions, and discover Fiscal Data endpoint fields. Treasury Fiscal Data is public and needs no upstream API key. Dates and currency amounts are typed, including exact decimals. Use date arguments and filters_json to reduce upstream work. page_size controls request size and max_rows=0 retrieves all matches. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.\n\nQueries use bounded HTTP responses and retries. Credentials stay out of continuation state. See README.md for deployment and operational limits.",
+        "vgi.executable_examples": "[{\"name\": \"discover_datasets\", \"description\": \"Discover available functions without credentials or API requests\", \"sql\": \"SELECT function_name FROM duckdb_functions() WHERE database_name = 'treasury' AND function_name = 'datasets' ORDER BY function_name\", \"expected_result\": [{\"function_name\": \"datasets\"}]}]",
+        "vgi.icon_url": "https://query.farm/media-kit/products/vgi/vgi-logo.png",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"public data\", \"time series\", \"duckdb\", \"sql\"]",
+        "vgi.license": "0BSD",
+        "vgi.source_url": "https://github.com/Query-farm/vgi-treasury",
+        "vgi.subtitle": "Query federal debt, operating cash, deposits, withdrawals and public debt transactions, and discover Fiscal Data endpoint fields.",
+        "vgi.support_contact": "https://github.com/Query-farm/vgi-treasury/issues",
+        "vgi.support_policy_url": "https://github.com/Query-farm/vgi-treasury/blob/main/README.md",
+        "vgi.title": "Treasury Fiscal Data"
+      },
+      false,
+      "vgi",
+      false,
+      false,
+      null,
+      {
+        "location": "uvx --from git+https://github.com/Query-farm/vgi-treasury@e27520088422ac6b5698c117908a9e8c36a63f62 vgi-treasury-worker"
+      }
+    ]
+  ]
+}

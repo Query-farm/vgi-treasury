@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "notebook_sha256": "8a30a33a92110762ce63399f56dbd438110a615ff8b7c3bf124c459f908605dc",
+  "catalog_sha256": "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+  "worker_revision": "v0.1.0",
+  "status": "success",
+  "executed_at": "2026-11-14T22:58:16.602692+00:00",
+  "engine": "Haybarn 2.0.0rc11 / VGI e75482339d",
+  "command": "uv run --locked --extra runner vgi-notebooks",
+  "catalog_aliases": [
+    "treasury"
+  ],
+  "cells": [
+    {
+      "id": "parameters",
+      "status": "success",
+      "execution_count": 1,
+      "source_sha256": "b5af30dfff5998b875ce057066af62bd3b7c2280117c7d5e48819563486bc7c4",
+      "outputs_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "id": "install",
+      "status": "success",
+      "execution_count": 2,
+      "source_sha256": "0dd8b983dea2803c1b52653046a11aaedb9a267a355d31e799a48e9cd9e5e282",
+      "outputs_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "id": "setup",
+      "status": "success",
+      "execution_count": 3,
+      "source_sha256": "d000163770d38d3a3be253830401a96b37a43c062c363f1883091a9aadb885f2",
+      "outputs_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "id": "attach",
+      "status": "success",
+      "execution_count": 4,
+      "source_sha256": "7757dae467665dede79b2475344cc83eee4475340b6cfcc555268ddfae78518f",
+      "outputs_sha256": "c17c19a5c176854762c97c96bafef62f247262c382ecc6533cf998819c105960"
+    },
+    {
+      "id": "fetch-sql",
+      "status": "success",
+      "execution_count": 5,
+      "source_sha256": "7f94d4632c0e35b44c128039bd6a3fea0029467de73cd3342a5aefad01ac3d8b",
+      "outputs_sha256": "909e516dcfba18bffb1d7788159efeacbdecc29345fea0df806fdc9466d877ed"
+    },
+    {
+      "id": "field-display",
+      "status": "success",
+      "execution_count": 6,
+      "source_sha256": "050e753017a08f6accfa6aba894aff4c60fe54b71c4bee8b78f9a834d86c55e5",
+      "outputs_sha256": "86d1324ea10ef802b78d6e2eff164981c05436916b5263ae08f3a81deba3066c"
+    },
+    {
+      "id": "hierarchy-sql",
+      "status": "success",
+      "execution_count": 7,
+      "source_sha256": "ef4d98ba6a452a409f4ac1d737d29bb65b5df3d057701ead69382a72e92636d4",
+      "outputs_sha256": "293e9247e812089fcc7ab4b086e0ca8fc0e9d2cc03094d78546922ddfaa80399"
+    },
+    {
+      "id": "months-capture",
+      "status": "success",
+      "execution_count": 8,
+      "source_sha256": "4d4cc719d7a68467865e0d80e793990d8a515e8300c4a5bb796ca26fff83d1d7",
+      "outputs_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "id": "monthly-result",
+      "status": "success",
+      "execution_count": 9,
+      "source_sha256": "b7155a8852db61b3776fa95a078f05aa7fd899b0be40d583435897077bf20920",
+      "outputs_sha256": "4796c721166caf636e16740ce4fc6dfbe29307459207ad487d1009d4e6420a3c"
+    },
+    {
+      "id": "monthly-chart",
+      "status": "success",
+      "execution_count": 10,
+      "source_sha256": "7dccc244096b1530cfc9a0a412da8094a0ecbb5ab939462c0e0de47fc040c602",
+      "outputs_sha256": "74cf9459ffdbf8412cadd81be1d501fa9c7840978021eebdd9ef85699d403d18"
+    },
+    {
+      "id": "rates-sql",
+      "status": "success",
+      "execution_count": 11,
+      "source_sha256": "97522fce397c80436716c02f0d8851f8ab5712c583654b5b2a7bb0222fa0fbae",
+      "outputs_sha256": "e4bac6e7b598478f24b3b97cd482b896b76c6e28bd189c7c9769e37e8a204a46"
+    },
+    {
+      "id": "rates-capture",
+      "status": "success",
+      "execution_count": 12,
+      "source_sha256": "f921303ef8ab7dd5d72b50f49d1e2dd690c41249844c0c5ff5abfd7024dfb06a",
+      "outputs_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "id": "rates-result",
+      "status": "success",
+      "execution_count": 13,
+      "source_sha256": "eb5b376a6380fae135f699e66aa320fb444d70fa8220a316dacb75b64d74a189",
+      "outputs_sha256": "f16c4418b033d7727bd38b636649b520e85213610479d5dcbf7132993a84ecfe"
+    },
+    {
+      "id": "rates-chart",
+      "status": "success",
+      "execution_count": 14,
+      "source_sha256": "3a37eba0ab91df953bcea73dc99278beba640fbd5b4712debff8dd50e727f96f",
+      "outputs_sha256": "903691fbe9a6b3f0f2de05023fdae4bef9ca404aaba932fa3a5bcc7d5eadac04"
+    },
+    {
+      "id": "checks-sql",
+      "status": "success",
+      "execution_count": 15,
+      "source_sha256": "039f6e7bb25b53d3371cbb4a89298cab014e94f37db7825fd3eddc5591a03749",
+      "outputs_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "id": "audit",
+      "status": "success",
+      "execution_count": 16,
+      "source_sha256": "ba668df1e10982f45a00626dd1d945e10a1cf0b4bff04a2b5678c42b076c31aa",
+      "outputs_sha256": "ebb3181fe3e139a46a8556fbc280086938dbbfa00b44716da01b024334a83de8"
+    },
+    {
+      "id": "cleanup",
+      "status": "success",
+      "execution_count": 17,
+      "source_sha256": "73438a47cfe56e0d69d5bb0dfb4ce3552f29319da414a14a47d6f0052807b375",
+      "outputs_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ]
+}

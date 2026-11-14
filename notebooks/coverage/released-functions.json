@@ -1,0 +1,447 @@
+{
+  "query": "SELECT * FROM duckdb_functions() WHERE database_name='treasury'",
+  "columns": [
+    "database_name",
+    "database_oid",
+    "schema_name",
+    "function_name",
+    "alias_of",
+    "function_type",
+    "description",
+    "comment",
+    "tags",
+    "return_type",
+    "parameters",
+    "parameter_types",
+    "varargs",
+    "macro_definition",
+    "has_side_effects",
+    "internal",
+    "extension_name",
+    "function_oid",
+    "examples",
+    "stability",
+    "categories"
+  ],
+  "rows": [
+    [
+      "treasury",
+      "22592",
+      "main",
+      "monthly_statement",
+      null,
+      "table",
+      "Monthly Treasury Statement table 1, including headers and subtotals. record_date identifies the report; classification_desc and record_type_cd identify the represented period. Raw API amounts are not scaled to the website display.",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Monthly Treasury Statement table 1, including headers and subtotals. record_date identifies the report; classification_desc and record_type_cd identify the represented period. Raw API amounts are not scaled to the website display. Returns typed columns record_date, parent_id, classification_id, classification_desc, current_month_gross_rcpt_amt, current_month_gross_outly_amt, current_month_dfct_sur_amt, table_nbr, src_line_nbr, print_order_nbr, line_code_nbr, data_type_cd, record_type_cd, sequence_level_nbr, sequence_number_cd, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## monthly_statement\n\nMonthly Treasury Statement table 1, including headers and subtotals. record_date identifies the report; classification_desc and record_type_cd identify the represented period. Raw API amounts are not scaled to the website display. Returns typed columns record_date, parent_id, classification_id, classification_desc, current_month_gross_rcpt_amt, current_month_gross_outly_amt, current_month_dfct_sur_amt, table_nbr, src_line_nbr, print_order_nbr, line_code_nbr, data_type_cd, record_type_cd, sequence_level_nbr, sequence_number_cd, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Monthly Treasury receipts and outlays\", \"sql\": \"SELECT classification_desc, current_month_gross_rcpt_amt, current_month_gross_outly_amt FROM treasury.main.monthly_statement(start_date := '2024-01-31', end_date := '2024-01-31') WHERE data_type_cd='D' ORDER BY src_line_nbr\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"monthly_statement\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"record_date\", \"type\": \"DATE\", \"description\": \"Record Date. Source report/record date, not necessarily the period described by every row.\"}, {\"name\": \"parent_id\", \"type\": \"VARCHAR\", \"description\": \"Parent ID.\"}, {\"name\": \"classification_id\", \"type\": \"VARCHAR\", \"description\": \"Classification ID.\"}, {\"name\": \"classification_desc\", \"type\": \"VARCHAR\", \"description\": \"Classification Description.\"}, {\"name\": \"current_month_gross_rcpt_amt\", \"type\": \"DECIMAL(38, 2)\", \"description\": \"Current Month Gross Receipts Amount. Exact source amount; API currency units; no rescaling.\"}, {\"name\": \"current_month_gross_outly_amt\", \"type\": \"DECIMAL(38, 2)\", \"description\": \"Current Month Gross Outlay Amount. Exact source amount; API currency units; no rescaling.\"}, {\"name\": \"current_month_dfct_sur_amt\", \"type\": \"DECIMAL(38, 2)\", \"description\": \"Current Month Deficit Surplus Amount. Exact source amount; API currency units; no rescaling.\"}, {\"name\": \"table_nbr\", \"type\": \"VARCHAR\", \"description\": \"Table Number.\"}, {\"name\": \"src_line_nbr\", \"type\": \"BIGINT\", \"description\": \"Source Line Number.\"}, {\"name\": \"print_order_nbr\", \"type\": \"VARCHAR\", \"description\": \"Print Order Sequence Number.\"}, {\"name\": \"line_code_nbr\", \"type\": \"VARCHAR\", \"description\": \"Line Code Number.\"}, {\"name\": \"data_type_cd\", \"type\": \"VARCHAR\", \"description\": \"Data Type Code.\"}, {\"name\": \"record_type_cd\", \"type\": \"VARCHAR\", \"description\": \"Record Type Code.\"}, {\"name\": \"sequence_level_nbr\", \"type\": \"VARCHAR\", \"description\": \"Sequence Level Number.\"}, {\"name\": \"sequence_number_cd\", \"type\": \"VARCHAR\", \"description\": \"Sequence Number Code.\"}, {\"name\": \"record_fiscal_year\", \"type\": \"BIGINT\", \"description\": \"Fiscal Year.\"}, {\"name\": \"record_fiscal_quarter\", \"type\": \"BIGINT\", \"description\": \"Fiscal Quarter Number.\"}, {\"name\": \"record_calendar_year\", \"type\": \"BIGINT\", \"description\": \"Calendar Year.\"}, {\"name\": \"record_calendar_quarter\", \"type\": \"BIGINT\", \"description\": \"Calendar Quarter Number.\"}, {\"name\": \"record_calendar_month\", \"type\": \"BIGINT\", \"description\": \"Calendar Month Number.\"}, {\"name\": \"record_calendar_day\", \"type\": \"BIGINT\", \"description\": \"Calendar Day Number.\"}, {\"name\": \"source_json\", \"type\": \"VARCHAR\", \"description\": \"Complete original row preserving source text and any additional fields.\"}, {\"name\": \"amount_units\", \"type\": \"VARCHAR\", \"description\": \"Source amount scale for this endpoint; not a conversion factor.\"}]",
+        "vgi.title": "Monthly Treasury receipts and outlays"
+      },
+      null,
+      [
+        "page_size",
+        "max_rows",
+        "start_page",
+        "sort_fields",
+        "filters_json",
+        "start_date",
+        "end_date"
+      ],
+      [
+        "BIGINT",
+        "BIGINT",
+        "BIGINT",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22731,
+      [
+        "SELECT classification_desc, current_month_gross_rcpt_amt, current_month_gross_outly_amt FROM treasury.main.monthly_statement(start_date := '2024-01-31', end_date := '2024-01-31') WHERE data_type_cd='D' ORDER BY src_line_nbr"
+      ],
+      null,
+      []
+    ],
+    [
+      "treasury",
+      "22592",
+      "main",
+      "records",
+      null,
+      "table",
+      "Stream exact source records from any relative Fiscal Data v1/v2 route. record_json preserves every field; inspect fields() before extracting values. The default sort assumes record_date and src_line_nbr; choose sort_fields for endpoints with different keys.",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Stream exact source records from any relative Fiscal Data v1/v2 route. record_json preserves every field; inspect fields() before extracting values. The default sort assumes record_date and src_line_nbr; choose sort_fields for endpoints with different keys. Returns typed columns record_date, record_json. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## records\n\nStream exact source records from any relative Fiscal Data v1/v2 route. record_json preserves every field; inspect fields() before extracting values. The default sort assumes record_date and src_line_nbr; choose sort_fields for endpoints with different keys. Returns typed columns record_date, record_json. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Read arbitrary fiscal records\", \"sql\": \"SELECT record_date, record_json FROM treasury.main.records('v2/accounting/od/debt_to_penny', start_date := '2024-01-02', end_date := '2024-01-03') ORDER BY record_date\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"records\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"record_date\", \"type\": \"DATE\", \"description\": \"Source record date when present; not necessarily the observation period.\"}, {\"name\": \"record_json\", \"type\": \"VARCHAR\", \"description\": \"Complete original row with exact source strings and null markers.\"}]",
+        "vgi.title": "Read arbitrary fiscal records"
+      },
+      null,
+      [
+        "endpoint",
+        "page_size",
+        "max_rows",
+        "start_page",
+        "sort_fields",
+        "filters_json",
+        "start_date",
+        "end_date"
+      ],
+      [
+        "VARCHAR",
+        "BIGINT",
+        "BIGINT",
+        "BIGINT",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22734,
+      [
+        "SELECT record_date, record_json FROM treasury.main.records('v2/accounting/od/debt_to_penny', start_date := '2024-01-02', end_date := '2024-01-03') ORDER BY record_date"
+      ],
+      null,
+      []
+    ],
+    [
+      "treasury",
+      "22592",
+      "main",
+      "deposits_withdrawals",
+      null,
+      "table",
+      "Daily Treasury cash deposits and withdrawals, including month-to-date and fiscal-year-to-date figures. Categories and totals may overlap; filter before aggregation.",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Daily Treasury cash deposits and withdrawals, including month-to-date and fiscal-year-to-date figures. Categories and totals may overlap; filter before aggregation. Returns typed columns record_date, account_type, transaction_type, transaction_catg, transaction_catg_desc, transaction_today_amt, transaction_mtd_amt, transaction_fytd_amt, table_nbr, table_nm, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## deposits_withdrawals\n\nDaily Treasury cash deposits and withdrawals, including month-to-date and fiscal-year-to-date figures. Categories and totals may overlap; filter before aggregation. Returns typed columns record_date, account_type, transaction_type, transaction_catg, transaction_catg_desc, transaction_today_amt, transaction_mtd_amt, transaction_fytd_amt, table_nbr, table_nm, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Cash deposits and withdrawals\", \"sql\": \"SELECT transaction_type, transaction_catg, transaction_today_amt FROM treasury.main.deposits_withdrawals(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY src_line_nbr\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"deposits_withdrawals\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"record_date\", \"type\": \"DATE\", \"description\": \"Record Date. Source report/record date, not necessarily the period described by every row.\"}, {\"name\": \"account_type\", \"type\": \"VARCHAR\", \"description\": \"Type of Account.\"}, {\"name\": \"transaction_type\", \"type\": \"VARCHAR\", \"description\": \"Transaction Type.\"}, {\"name\": \"transaction_catg\", \"type\": \"VARCHAR\", \"description\": \"Transaction Category.\"}, {\"name\": \"transaction_catg_desc\", \"type\": \"VARCHAR\", \"description\": \"Transaction Category Description.\"}, {\"name\": \"transaction_today_amt\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Transactions Today. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"transaction_mtd_amt\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Transactions Month to Date. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"transaction_fytd_amt\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Transactions Fiscal Year to Date. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"table_nbr\", \"type\": \"VARCHAR\", \"description\": \"Table Number.\"}, {\"name\": \"table_nm\", \"type\": \"VARCHAR\", \"description\": \"Table Name.\"}, {\"name\": \"src_line_nbr\", \"type\": \"BIGINT\", \"description\": \"Source Line Number.\"}, {\"name\": \"record_fiscal_year\", \"type\": \"BIGINT\", \"description\": \"Fiscal Year.\"}, {\"name\": \"record_fiscal_quarter\", \"type\": \"BIGINT\", \"description\": \"Fiscal Quarter Number.\"}, {\"name\": \"record_calendar_year\", \"type\": \"BIGINT\", \"description\": \"Calendar Year.\"}, {\"name\": \"record_calendar_quarter\", \"type\": \"BIGINT\", \"description\": \"Calendar Quarter Number.\"}, {\"name\": \"record_calendar_month\", \"type\": \"BIGINT\", \"description\": \"Calendar Month Number.\"}, {\"name\": \"record_calendar_day\", \"type\": \"BIGINT\", \"description\": \"Calendar Day Number.\"}, {\"name\": \"source_json\", \"type\": \"VARCHAR\", \"description\": \"Complete original row preserving source text and any additional fields.\"}, {\"name\": \"amount_units\", \"type\": \"VARCHAR\", \"description\": \"Source amount scale for this endpoint; not a conversion factor.\"}]",
+        "vgi.title": "Cash deposits and withdrawals"
+      },
+      null,
+      [
+        "page_size",
+        "max_rows",
+        "start_page",
+        "sort_fields",
+        "filters_json",
+        "start_date",
+        "end_date"
+      ],
+      [
+        "BIGINT",
+        "BIGINT",
+        "BIGINT",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22729,
+      [
+        "SELECT transaction_type, transaction_catg, transaction_today_amt FROM treasury.main.deposits_withdrawals(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY src_line_nbr"
+      ],
+      null,
+      []
+    ],
+    [
+      "treasury",
+      "22592",
+      "main",
+      "datasets",
+      null,
+      "table",
+      "Search the worker's curated typed endpoints, amount scales and interpretation notes. This local catalog is not an exhaustive listing of every Treasury API dataset; use records() for other relative Fiscal Data routes.",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Search the worker's curated typed endpoints, amount scales and interpretation notes. This local catalog is not an exhaustive listing of every Treasury API dataset; use records() for other relative Fiscal Data routes. Returns typed columns dataset, endpoint, title, amount_units, description. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## datasets\n\nSearch the worker's curated typed endpoints, amount scales and interpretation notes. This local catalog is not an exhaustive listing of every Treasury API dataset; use records() for other relative Fiscal Data routes. Returns typed columns dataset, endpoint, title, amount_units, description. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Discover fiscal datasets\", \"sql\": \"SELECT dataset, endpoint, amount_units FROM treasury.main.datasets() ORDER BY dataset\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"datasets\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"dataset\", \"type\": \"VARCHAR\", \"description\": \"Name of a typed worker function.\"}, {\"name\": \"endpoint\", \"type\": \"VARCHAR\", \"description\": \"Relative Fiscal Data route for fields or records.\"}, {\"name\": \"title\", \"type\": \"VARCHAR\", \"description\": \"Dataset title.\"}, {\"name\": \"amount_units\", \"type\": \"VARCHAR\", \"description\": \"Source amount scale; generic API amounts are not rescaled.\"}, {\"name\": \"description\", \"type\": \"VARCHAR\", \"description\": \"Scope and interpretation notes.\"}]",
+        "vgi.title": "Discover fiscal datasets"
+      },
+      null,
+      [
+        "query"
+      ],
+      [
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22727,
+      [
+        "SELECT dataset, endpoint, amount_units FROM treasury.main.datasets() ORDER BY dataset"
+      ],
+      null,
+      []
+    ],
+    [
+      "treasury",
+      "22592",
+      "main",
+      "operating_cash_balance",
+      null,
+      "table",
+      "Daily Treasury operating cash balances. Since April 2022 some closing fields are null; account_type distinguishes opening and closing balance rows.",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Daily Treasury operating cash balances. Since April 2022 some closing fields are null; account_type distinguishes opening and closing balance rows. Returns typed columns record_date, account_type, close_today_bal, open_today_bal, open_month_bal, open_fiscal_year_bal, table_nbr, table_nm, sub_table_name, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## operating_cash_balance\n\nDaily Treasury operating cash balances. Since April 2022 some closing fields are null; account_type distinguishes opening and closing balance rows. Returns typed columns record_date, account_type, close_today_bal, open_today_bal, open_month_bal, open_fiscal_year_bal, table_nbr, table_nm, sub_table_name, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Operating cash balance\", \"sql\": \"SELECT record_date, account_type, open_today_bal FROM treasury.main.operating_cash_balance(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY record_date, src_line_nbr\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"operating_cash_balance\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"record_date\", \"type\": \"DATE\", \"description\": \"Record Date. Source report/record date, not necessarily the period described by every row.\"}, {\"name\": \"account_type\", \"type\": \"VARCHAR\", \"description\": \"Type of Account.\"}, {\"name\": \"close_today_bal\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Closing Balance Today. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"open_today_bal\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Opening Balance Today. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"open_month_bal\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Opening Balance This Month. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"open_fiscal_year_bal\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Opening Balance This Fiscal Year. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"table_nbr\", \"type\": \"VARCHAR\", \"description\": \"Table Number.\"}, {\"name\": \"table_nm\", \"type\": \"VARCHAR\", \"description\": \"Table Name.\"}, {\"name\": \"sub_table_name\", \"type\": \"VARCHAR\", \"description\": \"Sub Table Name.\"}, {\"name\": \"src_line_nbr\", \"type\": \"BIGINT\", \"description\": \"Source Line Number.\"}, {\"name\": \"record_fiscal_year\", \"type\": \"BIGINT\", \"description\": \"Fiscal Year.\"}, {\"name\": \"record_fiscal_quarter\", \"type\": \"BIGINT\", \"description\": \"Fiscal Quarter Number.\"}, {\"name\": \"record_calendar_year\", \"type\": \"BIGINT\", \"description\": \"Calendar Year.\"}, {\"name\": \"record_calendar_quarter\", \"type\": \"BIGINT\", \"description\": \"Calendar Quarter Number.\"}, {\"name\": \"record_calendar_month\", \"type\": \"BIGINT\", \"description\": \"Calendar Month Number.\"}, {\"name\": \"record_calendar_day\", \"type\": \"BIGINT\", \"description\": \"Calendar Day Number.\"}, {\"name\": \"source_json\", \"type\": \"VARCHAR\", \"description\": \"Complete original row preserving source text and any additional fields.\"}, {\"name\": \"amount_units\", \"type\": \"VARCHAR\", \"description\": \"Source amount scale for this endpoint; not a conversion factor.\"}]",
+        "vgi.title": "Operating cash balance"
+      },
+      null,
+      [
+        "page_size",
+        "max_rows",
+        "start_page",
+        "sort_fields",
+        "filters_json",
+        "start_date",
+        "end_date"
+      ],
+      [
+        "BIGINT",
+        "BIGINT",
+        "BIGINT",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22732,
+      [
+        "SELECT record_date, account_type, open_today_bal FROM treasury.main.operating_cash_balance(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY record_date, src_line_nbr"
+      ],
+      null,
+      []
+    ],
+    [
+      "treasury",
+      "22592",
+      "main",
+      "debt_to_penny",
+      null,
+      "table",
+      "Daily debt held by the public, intragovernmental holdings and total public debt; exact API amounts.",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Daily debt held by the public, intragovernmental holdings and total public debt; exact API amounts. Returns typed columns record_date, debt_held_public_amt, intragov_hold_amt, tot_pub_debt_out_amt, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## debt_to_penny\n\nDaily debt held by the public, intragovernmental holdings and total public debt; exact API amounts. Returns typed columns record_date, debt_held_public_amt, intragov_hold_amt, tot_pub_debt_out_amt, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Federal debt to the penny\", \"sql\": \"SELECT record_date, tot_pub_debt_out_amt FROM treasury.main.debt_to_penny(start_date := '2024-01-02', end_date := '2024-01-03') ORDER BY record_date\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"debt_to_penny\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"record_date\", \"type\": \"DATE\", \"description\": \"Record Date. Source report/record date, not necessarily the period described by every row.\"}, {\"name\": \"debt_held_public_amt\", \"type\": \"DECIMAL(38, 2)\", \"description\": \"Debt Held by the Public. Exact source amount; USD; no rescaling.\"}, {\"name\": \"intragov_hold_amt\", \"type\": \"DECIMAL(38, 2)\", \"description\": \"Intragovernmental Holdings. Exact source amount; USD; no rescaling.\"}, {\"name\": \"tot_pub_debt_out_amt\", \"type\": \"DECIMAL(38, 2)\", \"description\": \"Total Public Debt Outstanding. Exact source amount; USD; no rescaling.\"}, {\"name\": \"src_line_nbr\", \"type\": \"BIGINT\", \"description\": \"Source Line Number.\"}, {\"name\": \"record_fiscal_year\", \"type\": \"BIGINT\", \"description\": \"Fiscal Year.\"}, {\"name\": \"record_fiscal_quarter\", \"type\": \"BIGINT\", \"description\": \"Fiscal Quarter Number.\"}, {\"name\": \"record_calendar_year\", \"type\": \"BIGINT\", \"description\": \"Calendar Year.\"}, {\"name\": \"record_calendar_quarter\", \"type\": \"BIGINT\", \"description\": \"Calendar Quarter Number.\"}, {\"name\": \"record_calendar_month\", \"type\": \"BIGINT\", \"description\": \"Calendar Month Number.\"}, {\"name\": \"record_calendar_day\", \"type\": \"BIGINT\", \"description\": \"Calendar Day Number.\"}, {\"name\": \"source_json\", \"type\": \"VARCHAR\", \"description\": \"Complete original row preserving source text and any additional fields.\"}, {\"name\": \"amount_units\", \"type\": \"VARCHAR\", \"description\": \"Source amount scale for this endpoint; not a conversion factor.\"}]",
+        "vgi.title": "Federal debt to the penny"
+      },
+      null,
+      [
+        "page_size",
+        "max_rows",
+        "start_page",
+        "sort_fields",
+        "filters_json",
+        "start_date",
+        "end_date"
+      ],
+      [
+        "BIGINT",
+        "BIGINT",
+        "BIGINT",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22728,
+      [
+        "SELECT record_date, tot_pub_debt_out_amt FROM treasury.main.debt_to_penny(start_date := '2024-01-02', end_date := '2024-01-03') ORDER BY record_date"
+      ],
+      null,
+      []
+    ],
+    [
+      "treasury",
+      "22592",
+      "main",
+      "public_debt_transactions",
+      null,
+      "table",
+      "Public debt issues and redemptions by security type in USD millions. transaction_type distinguishes Issues and Redemptions; security_market distinguishes Marketable and Nonmarketable. security_type retains source classifications such as Bills, Notes, Bonds and Government Account Series; inspect distinct values in your date window rather than assuming a fixed enumeration. transaction_today_amt is daily, transaction_mtd_amt is month-to-date, and transaction_fytd_amt is fiscal-year-to-date. These are overlapping measures; do not sum them together or sum cumulative values across dates. For operating cash use operating_cash_balance(); for deposits and withdrawals use deposits_withdrawals().",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Public debt issues and redemptions by security type in USD millions. transaction_type distinguishes Issues and Redemptions; security_market distinguishes Marketable and Nonmarketable. security_type retains source classifications such as Bills, Notes, Bonds and Government Account Series; inspect distinct values in your date window rather than assuming a fixed enumeration. transaction_today_amt is daily, transaction_mtd_amt is month-to-date, and transaction_fytd_amt is fiscal-year-to-date. These are overlapping measures; do not sum them together or sum cumulative values across dates. For operating cash use operating_cash_balance(); for deposits and withdrawals use deposits_withdrawals(). Returns typed columns record_date, transaction_type, security_market, security_type, security_type_desc, transaction_today_amt, transaction_mtd_amt, transaction_fytd_amt, table_nbr, table_nm, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## public_debt_transactions\n\nPublic debt issues and redemptions by security type in USD millions. transaction_type distinguishes Issues and Redemptions; security_market distinguishes Marketable and Nonmarketable. security_type retains source classifications such as Bills, Notes, Bonds and Government Account Series; inspect distinct values in your date window rather than assuming a fixed enumeration. transaction_today_amt is daily, transaction_mtd_amt is month-to-date, and transaction_fytd_amt is fiscal-year-to-date. These are overlapping measures; do not sum them together or sum cumulative values across dates. For operating cash use operating_cash_balance(); for deposits and withdrawals use deposits_withdrawals(). Returns typed columns record_date, transaction_type, security_market, security_type, security_type_desc, transaction_today_amt, transaction_mtd_amt, transaction_fytd_amt, table_nbr, table_nm, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Public debt transactions\", \"sql\": \"SELECT transaction_type, security_type, transaction_today_amt FROM treasury.main.public_debt_transactions(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY src_line_nbr\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"public_debt_transactions\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"record_date\", \"type\": \"DATE\", \"description\": \"Record Date. Source report/record date, not necessarily the period described by every row.\"}, {\"name\": \"transaction_type\", \"type\": \"VARCHAR\", \"description\": \"Transaction Type.\"}, {\"name\": \"security_market\", \"type\": \"VARCHAR\", \"description\": \"Security Marketability.\"}, {\"name\": \"security_type\", \"type\": \"VARCHAR\", \"description\": \"Security Type.\"}, {\"name\": \"security_type_desc\", \"type\": \"VARCHAR\", \"description\": \"Security Type Description.\"}, {\"name\": \"transaction_today_amt\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Transactions Today. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"transaction_mtd_amt\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Transactions Month to Date. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"transaction_fytd_amt\", \"type\": \"DECIMAL(38, 0)\", \"description\": \"Transactions Fiscal Year to Date. Exact source amount; USD millions; no rescaling.\"}, {\"name\": \"table_nbr\", \"type\": \"VARCHAR\", \"description\": \"Table Number.\"}, {\"name\": \"table_nm\", \"type\": \"VARCHAR\", \"description\": \"Table Name.\"}, {\"name\": \"src_line_nbr\", \"type\": \"BIGINT\", \"description\": \"Source Line Number.\"}, {\"name\": \"record_fiscal_year\", \"type\": \"BIGINT\", \"description\": \"Fiscal Year.\"}, {\"name\": \"record_fiscal_quarter\", \"type\": \"BIGINT\", \"description\": \"Fiscal Quarter Number.\"}, {\"name\": \"record_calendar_year\", \"type\": \"BIGINT\", \"description\": \"Calendar Year.\"}, {\"name\": \"record_calendar_quarter\", \"type\": \"BIGINT\", \"description\": \"Calendar Quarter Number.\"}, {\"name\": \"record_calendar_month\", \"type\": \"BIGINT\", \"description\": \"Calendar Month Number.\"}, {\"name\": \"record_calendar_day\", \"type\": \"BIGINT\", \"description\": \"Calendar Day Number.\"}, {\"name\": \"source_json\", \"type\": \"VARCHAR\", \"description\": \"Complete original row preserving source text and any additional fields.\"}, {\"name\": \"amount_units\", \"type\": \"VARCHAR\", \"description\": \"Source amount scale for this endpoint; not a conversion factor.\"}]",
+        "vgi.title": "Public debt transactions"
+      },
+      null,
+      [
+        "page_size",
+        "max_rows",
+        "start_page",
+        "sort_fields",
+        "filters_json",
+        "start_date",
+        "end_date"
+      ],
+      [
+        "BIGINT",
+        "BIGINT",
+        "BIGINT",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22733,
+      [
+        "SELECT transaction_type, security_type, transaction_today_amt FROM treasury.main.public_debt_transactions(start_date := '2024-01-02', end_date := '2024-01-02') ORDER BY src_line_nbr"
+      ],
+      null,
+      []
+    ],
+    [
+      "treasury",
+      "22592",
+      "main",
+      "fields",
+      null,
+      "table",
+      "Read live field metadata for a relative Fiscal Data endpoint. Fetches a single source row to obtain metadata; it emits only field names, labels, source types and format descriptors.",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Read live field metadata for a relative Fiscal Data endpoint. Fetches a single source row to obtain metadata; it emits only field names, labels, source types and format descriptors. Returns typed columns field_name, label, source_type, source_format. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## fields\n\nRead live field metadata for a relative Fiscal Data endpoint. Fetches a single source row to obtain metadata; it emits only field names, labels, source types and format descriptors. Returns typed columns field_name, label, source_type, source_format. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Inspect endpoint fields\", \"sql\": \"SELECT field_name, source_type, source_format FROM treasury.main.fields('v2/accounting/od/debt_to_penny') ORDER BY field_name\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"fields\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"field_name\", \"type\": \"VARCHAR\", \"description\": \"Source API field name.\"}, {\"name\": \"label\", \"type\": \"VARCHAR\", \"description\": \"Source field label.\"}, {\"name\": \"source_type\", \"type\": \"VARCHAR\", \"description\": \"Treasury's type identifier, such as DATE or CURRENCY.\"}, {\"name\": \"source_format\", \"type\": \"VARCHAR\", \"description\": \"Source display-format descriptor; not an inferred scale conversion.\"}]",
+        "vgi.title": "Inspect endpoint fields"
+      },
+      null,
+      [
+        "endpoint"
+      ],
+      [
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22730,
+      [
+        "SELECT field_name, source_type, source_format FROM treasury.main.fields('v2/accounting/od/debt_to_penny') ORDER BY field_name"
+      ],
+      null,
+      []
+    ],
+    [
+      "treasury",
+      "22592",
+      "main",
+      "average_interest_rates",
+      null,
+      "table",
+      "Monthly average interest rates on outstanding Treasury securities; values are percentages, not fractions.",
+      null,
+      {
+        "vgi.category": "api",
+        "vgi.doc_llm": "Monthly average interest rates on outstanding Treasury securities; values are percentages, not fractions. Returns typed columns record_date, security_type_desc, security_desc, avg_interest_rate_amt, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.doc_md": "## average_interest_rates\n\nMonthly average interest rates on outstanding Treasury securities; values are percentages, not fractions. Returns typed columns record_date, security_type_desc, security_desc, avg_interest_rate_amt, src_line_nbr, record_fiscal_year, record_fiscal_quarter, record_calendar_year, record_calendar_quarter, record_calendar_month, record_calendar_day, source_json, amount_units. The public upstream API needs no key. Amounts retain source scales; original source strings remain available in JSON. NULL arguments are rejected. Missing optional response fields return NULL. Upstream errors fail the query; SQL WHERE filters are local.",
+        "vgi.example_queries": "[{\"description\": \"Average interest rates\", \"sql\": \"SELECT security_desc, avg_interest_rate_amt FROM treasury.main.average_interest_rates(start_date := '2024-01-31', end_date := '2024-01-31') ORDER BY security_desc\"}]",
+        "vgi.keywords": "[\"treasury\", \"economics\", \"time series\", \"average_interest_rates\"]",
+        "vgi.result_columns_schema": "[{\"name\": \"record_date\", \"type\": \"DATE\", \"description\": \"Record Date. Source report/record date, not necessarily the period described by every row.\"}, {\"name\": \"security_type_desc\", \"type\": \"VARCHAR\", \"description\": \"Security Type Description.\"}, {\"name\": \"security_desc\", \"type\": \"VARCHAR\", \"description\": \"Security Description.\"}, {\"name\": \"avg_interest_rate_amt\", \"type\": \"DECIMAL(38, 6)\", \"description\": \"Average Interest Rate Amount. Exact source amount; percent; no rescaling.\"}, {\"name\": \"src_line_nbr\", \"type\": \"BIGINT\", \"description\": \"Source Line Number.\"}, {\"name\": \"record_fiscal_year\", \"type\": \"BIGINT\", \"description\": \"Fiscal Year.\"}, {\"name\": \"record_fiscal_quarter\", \"type\": \"BIGINT\", \"description\": \"Fiscal Quarter Number.\"}, {\"name\": \"record_calendar_year\", \"type\": \"BIGINT\", \"description\": \"Calendar Year.\"}, {\"name\": \"record_calendar_quarter\", \"type\": \"BIGINT\", \"description\": \"Calendar Quarter Number.\"}, {\"name\": \"record_calendar_month\", \"type\": \"BIGINT\", \"description\": \"Calendar Month Number.\"}, {\"name\": \"record_calendar_day\", \"type\": \"BIGINT\", \"description\": \"Calendar Day Number.\"}, {\"name\": \"source_json\", \"type\": \"VARCHAR\", \"description\": \"Complete original row preserving source text and any additional fields.\"}, {\"name\": \"amount_units\", \"type\": \"VARCHAR\", \"description\": \"Source amount scale for this endpoint; not a conversion factor.\"}]",
+        "vgi.title": "Average interest rates"
+      },
+      null,
+      [
+        "page_size",
+        "max_rows",
+        "start_page",
+        "sort_fields",
+        "filters_json",
+        "start_date",
+        "end_date"
+      ],
+      [
+        "BIGINT",
+        "BIGINT",
+        "BIGINT",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR",
+        "VARCHAR"
+      ],
+      null,
+      null,
+      null,
+      true,
+      null,
+      22726,
+      [
+        "SELECT security_desc, avg_interest_rate_amt FROM treasury.main.average_interest_rates(start_date := '2024-01-31', end_date := '2024-01-31') ORDER BY security_desc"
+      ],
+      null,
+      []
+    ]
+  ]
+}

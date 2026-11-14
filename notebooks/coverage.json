@@ -1,0 +1,382 @@
+{
+  "schema_version": 1,
+  "catalogs": {
+    "released": {
+      "path": "coverage/catalog-released.json",
+      "sha256": "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "catalog_sha256": "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+        "notes": "All nine read functions retained. Upstream API requires no key; no write APIs or additional tables/views. Both real runtimes expose nine functions and no tables/views. Full native signatures match. Current public source adds composed metadata examples and truststore-based HTTPS verification after v0.1.0; source diff retained. Notebook executions use the released worker, and current-interface coverage is distinguished from exact runtime execution."
+      }
+    },
+    "current": {
+      "path": "coverage/catalog-current.json",
+      "sha256": "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e",
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "catalog_sha256": "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e",
+        "notes": "All nine read functions retained. Upstream API requires no key; no write APIs or additional tables/views. Both real runtimes expose nine functions and no tables/views. Full native signatures match. Current public source adds composed metadata examples and truststore-based HTTPS verification after v0.1.0; source diff retained. Notebook executions use the released worker, and current-interface coverage is distinguished from exact runtime execution."
+      }
+    }
+  },
+  "notebooks": [
+    {
+      "path": "01_debt_components_and_report_changes.ipynb",
+      "sha256": "c393e7a3f693be633db84202c88e39306c1c59ab9b1e02cbd23256fa066a39bd",
+      "execution": {
+        "path": "coverage/run-01.json",
+        "sha256": "c2a2e659e0861427e1ac469067c110bce2a023495a3521a9e556ae48c6e3d81c"
+      }
+    },
+    {
+      "path": "02_cash_flows_have_different_boundaries.ipynb",
+      "sha256": "ee6d6476cfd5463af30984e626dcadaf6316fce5004745bb4f2be3cc6286ce8b",
+      "execution": {
+        "path": "coverage/run-02.json",
+        "sha256": "b35fd28566850c67082ee7ab48fbce6f2073478a1dd170e332b074f42c7c93c7"
+      }
+    },
+    {
+      "path": "03_one_report_date_many_measurements.ipynb",
+      "sha256": "8a30a33a92110762ce63399f56dbd438110a615ff8b7c3bf124c459f908605dc",
+      "execution": {
+        "path": "coverage/run-03.json",
+        "sha256": "10c321667108e82c5b5227adca2682fc612e24294d6c8e74e6e30b02319332e6"
+      }
+    }
+  ],
+  "examples": [
+    {
+      "object": {
+        "schema": "main",
+        "name": "datasets"
+      },
+      "notebook": "01_debt_components_and_report_changes.ipynb",
+      "sql": [
+        {
+          "cell": "c1bbf72a",
+          "reference": "treasury.main.datasets"
+        }
+      ],
+      "narrative_cells": [
+        "d7cee425"
+      ],
+      "result_cells": [
+        "08c27a2a",
+        "7120c9e5"
+      ],
+      "interpretation_cells": [
+        "08c27a2a"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "c393e7a3f693be633db84202c88e39306c1c59ab9b1e02cbd23256fa066a39bd",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Establish the specific endpoint and source USD scale before comparing exact amounts.",
+        "finding": "Debt-to-the-penny metadata is joined to the retrieved population; exact DECIMAL(38,2) USD and source bounds are displayed and independently checked. Curated catalog is explicitly not the entire upstream inventory."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "debt_to_penny"
+      },
+      "notebook": "01_debt_components_and_report_changes.ipynb",
+      "sql": [
+        {
+          "cell": "c1bbf72a",
+          "reference": "treasury.main.debt_to_penny"
+        }
+      ],
+      "narrative_cells": [
+        "eeda346d"
+      ],
+      "result_cells": [
+        "08c27a2a",
+        "63cb8a50",
+        "7120c9e5"
+      ],
+      "interpretation_cells": [
+        "63cb8a50"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "c393e7a3f693be633db84202c88e39306c1c59ab9b1e02cbd23256fa066a39bd",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Reconcile debt stock components and adjacent-report changes without treating stocks as spending.",
+        "finding": "All twelve original checks preserve exact source cents and component identities. Extending January 12 to January 19 adds reports and pages while preserving the entire shared prefix; differences telescope and first difference remains NULL."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "operating_cash_balance"
+      },
+      "notebook": "02_cash_flows_have_different_boundaries.ipynb",
+      "sql": [
+        {
+          "cell": "fetch-sql",
+          "reference": "treasury.main.operating_cash_balance"
+        }
+      ],
+      "narrative_cells": [
+        "scope-story"
+      ],
+      "result_cells": [
+        "fetch-sql",
+        "scope-sql",
+        "result",
+        "chart",
+        "audit"
+      ],
+      "interpretation_cells": [
+        "result"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "ee6d6476cfd5463af30984e626dcadaf6316fce5004745bb4f2be3cc6286ce8b",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Resolve account-labeled opening and closing balances while retaining missing legacy fields.",
+        "finding": "Recorded legacy close_today_bal is NULL. Explicit TGA Opening/Closing Balance rows supply open_today_bal; separate labeled selection and multiplicity checks prevent cross-account substitution. Cash residual remains visible at whole-million precision."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "deposits_withdrawals"
+      },
+      "notebook": "02_cash_flows_have_different_boundaries.ipynb",
+      "sql": [
+        {
+          "cell": "fetch-sql",
+          "reference": "treasury.main.deposits_withdrawals"
+        }
+      ],
+      "narrative_cells": [
+        "scope-story"
+      ],
+      "result_cells": [
+        "scope-sql",
+        "result",
+        "chart",
+        "audit"
+      ],
+      "interpretation_cells": [
+        "result"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "ee6d6476cfd5463af30984e626dcadaf6316fce5004745bb4f2be3cc6286ce8b",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Select published total rows without adding their underlying details twice.",
+        "finding": "Two exact TGA total labels produce deposits-minus-withdrawals. The selected three/five-day population has stock-flow residuals of 0 or ±1 USD million, an observed capture property rather than universal forced identity."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "public_debt_transactions"
+      },
+      "notebook": "02_cash_flows_have_different_boundaries.ipynb",
+      "sql": [
+        {
+          "cell": "fetch-sql",
+          "reference": "treasury.main.public_debt_transactions"
+        }
+      ],
+      "narrative_cells": [
+        "scope-story"
+      ],
+      "result_cells": [
+        "scope-sql",
+        "result",
+        "chart",
+        "audit"
+      ],
+      "interpretation_cells": [
+        "result"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "ee6d6476cfd5463af30984e626dcadaf6316fce5004745bb4f2be3cc6286ce8b",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Contrast net security issuance with net cash flow at the same source units and dates.",
+        "finding": "Distinct source lines and signed adjustments are retained. Issues-minus-redemptions differs materially from deposits-minus-withdrawals; January 8 yields 2,508 versus 10,584 USD million. No omitted-flow or causal claim follows from that scope difference."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "fields"
+      },
+      "notebook": "03_one_report_date_many_measurements.ipynb",
+      "sql": [
+        {
+          "cell": "fetch-sql",
+          "reference": "treasury.main.fields"
+        }
+      ],
+      "narrative_cells": [
+        "attach-story"
+      ],
+      "result_cells": [
+        "field-display",
+        "audit"
+      ],
+      "interpretation_cells": [
+        "monthly-result"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "8a30a33a92110762ce63399f56dbd438110a615ff8b7c3bf124c459f908605dc",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Label raw API amounts and verify their declared source type before typed comparison.",
+        "finding": "Three source fields retain labels, CURRENCY type and formatting descriptors alongside original text. Metadata comes from captured response, not a historical metadata vintage; currency label alone does not establish a website display conversion."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "records"
+      },
+      "notebook": "03_one_report_date_many_measurements.ipynb",
+      "sql": [
+        {
+          "cell": "fetch-sql",
+          "reference": "treasury.main.records"
+        }
+      ],
+      "narrative_cells": [
+        "attach-story"
+      ],
+      "result_cells": [
+        "field-display",
+        "audit"
+      ],
+      "interpretation_cells": [
+        "monthly-result"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "8a30a33a92110762ce63399f56dbd438110a615ff8b7c3bf124c459f908605dc",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Keep generic source JSON as an independent representation of the complete selected report population.",
+        "finding": "Raw field values are displayed with metadata; the generic and typed monthly source JSON sets reconcile exactly. Original monetary strings and NULL headers remain intact rather than guessed numeric replacements."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "monthly_statement"
+      },
+      "notebook": "03_one_report_date_many_measurements.ipynb",
+      "sql": [
+        {
+          "cell": "fetch-sql",
+          "reference": "treasury.main.monthly_statement"
+        }
+      ],
+      "narrative_cells": [
+        "hierarchy-story"
+      ],
+      "result_cells": [
+        "hierarchy-sql",
+        "monthly-result",
+        "monthly-chart",
+        "audit"
+      ],
+      "interpretation_cells": [
+        "monthly-result"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "8a30a33a92110762ce63399f56dbd438110a615ff8b7c3bf124c459f908605dc",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Resolve represented fiscal periods from parent IDs and row codes before summing.",
+        "finding": "The January report has 20 rows but 4 current-year monthly details; parent selection excludes prior fiscal year, headers and YTD total. Exact monthly sums reconcile to a separately retained fiscal total; February adds one selected detail."
+      }
+    },
+    {
+      "object": {
+        "schema": "main",
+        "name": "average_interest_rates"
+      },
+      "notebook": "03_one_report_date_many_measurements.ipynb",
+      "sql": [
+        {
+          "cell": "fetch-sql",
+          "reference": "treasury.main.average_interest_rates"
+        }
+      ],
+      "narrative_cells": [
+        "rates-story"
+      ],
+      "result_cells": [
+        "rates-sql",
+        "rates-result",
+        "rates-chart",
+        "audit"
+      ],
+      "interpretation_cells": [
+        "rates-result"
+      ],
+      "review": {
+        "status": "approved",
+        "reviewer": "Codex /root/notebooks_ortools",
+        "reviewed_at": "2026-11-14T22:58:48.407785+00:00",
+        "notebook_sha256": "8a30a33a92110762ce63399f56dbd438110a615ff8b7c3bf124c459f908605dc",
+        "catalog_sha256": [
+          "f82d1a5d250ac3f9d328316555ce29f62fc878d7e6f1b6c848293c2a06e6d546",
+          "8a682d40504d824a533b5c9b7f2cf25fea72d00c802a2e1935f21ce0a060c35e"
+        ],
+        "purpose": "Distinguish security-component percentages from a published aggregate and an unweighted statistic.",
+        "finding": "Six marketable component rates retain source precision; published Total Marketable is compared with a simple equal-weight mean without forcing equality. Missing principal weights prevent reconstructing aggregate or expense; no multiplication by monthly deficit is attempted."
+      }
+    }
+  ]
+}

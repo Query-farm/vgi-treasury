@@ -3,4 +3,4 @@ target-version = "py313"
 [lint]
 select = ["E", "F", "I"]
 [lint.per-file-ignores]
-"*.ipynb" = ["F821"]  # JupySQL capture variables are created by SQL magic.
+"*.ipynb" = ["E402", "F821"]  # Staged bootstrap imports and JupySQL capture variables are intentional.

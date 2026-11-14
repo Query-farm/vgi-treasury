@@ -1,56 +1,70 @@
-# Treasury debt components notebook
+# Treasury Fiscal Data notebooks
 
-[Debt components and report changes](01_debt_components_and_report_changes.ipynb) reconciles total public debt with publicly held debt and intragovernmental holdings, then decomposes changes between reported dates. Exact USD cents remain in SQL; the two charts explicitly scale levels to trillions and changes to billions.
+Read the saved results on GitHub or choose **Open in Colab** at the top of each notebook.
+
+| Notebook | Question | Default → experiment |
+|---|---|---|
+| [01 · Debt components and report changes](01_debt_components_and_report_changes.ipynb) | Do exact debt stocks and their component changes reconcile? | END_DATE January 12 → January 19, 2024 |
+| [02 · Cash-flow boundaries](02_cash_flows_have_different_boundaries.ipynb) | Do net cash and net debt issuance describe the same accounting scope? | LAST_REPORT January 10 → January 12, 2024 |
+| [03 · Report dates and measurements](03_one_report_date_many_measurements.ipynb) | Which fiscal months and rate summaries belong in a comparison? | REPORT_DATE January 31 → February 29, 2024 |
+
+**All saved analytical amounts are original public Treasury data, not synthetic fixtures.** Recorded responses are served locally through the real released worker; generated pagination envelopes preserve source rows. Notebook 01 retains the existing exact-dollar debt narrative and SQL. The new stories preserve whole-million rounding residuals, distinguish cash-flow scopes, select monthly hierarchy explicitly, and separate component percentages from published rate aggregates.
 
 ## Run from this directory
 
-Install [uv](https://docs.astral.sh/uv/) and Git. The locked notebook environment uses Python 3.13 or 3.14 and Haybarn 2.0.0rc11; the worker uses Python 3.13. First use needs network access for dependencies, the published VGI extension and the pinned Git worker. Recorded analysis then uses only the bundled public response and a loopback server. This directory can be copied alone; no worker checkout or local build is needed.
+Install [uv](https://docs.astral.sh/uv/). Initial packages, verified public companions, the VGI extension and Git-tag worker need internet. The shared base supports Python 3.11–3.14 kernels; uv provisions the worker's separate Python 3.13+ environment. No worker checkout, local build or globally registered kernel is required.
 
-```bash
-uv sync --frozen
-uv run --frozen python execute.py
+```sh
+uv sync --locked --extra runner
+uv run --locked --extra runner vgi-notebooks
+uv run --locked --extra runner vgi-notebooks 01_debt_components_and_report_changes.ipynb --parameters '{"END_DATE":"2024-01-19"}' --output-dir validation/longer-debt
+uv run --locked --extra runner vgi-notebooks 02_cash_flows_have_different_boundaries.ipynb --parameters '{"LAST_REPORT":"2024-01-12"}' --output-dir validation/longer-cash
+uv run --locked --extra runner vgi-notebooks 03_one_report_date_many_measurements.ipynb --parameters '{"REPORT_DATE":"2024-02-29"}' --output-dir validation/february
 ```
 
-The visible literal launcher fetches public Git revision `d5466e080cc8d241ced42b6d82d509c0b70766dc` with VGI SDK 0.51.1 / RPC 0.53.1. Rerun the default, experiment and explicit live validation after changing a pin.
+Interactive Jupyter uses this environment's kernel and this directory as cwd. Restart and Run All after changing parameters. Colab installs only the shared base, preserving compatible preloaded data/plotting and kernel libraries; `[runner]` is for local publication. Shared tools provide canonical branding, SVG charts, isolated SQL sessions, verified companions, coverage receipts and atomic execution. Parameter overrides require a separate output directory; failed runs preserve the last successful notebook.
 
-For interactive use, register this environment and select it in Jupyter:
+Each notebook visibly launches the clean release:
 
-```bash
-uv run --frozen python -m ipykernel install --user --name vgi-treasury-notebooks --display-name 'Python (treasury notebooks)'
+```sql
+INSTALL vgi FROM community;
+LOAD vgi;
+ATTACH 'treasury' (TYPE vgi,
+ LOCATION 'uvx --from git+https://github.com/Query-farm/vgi-treasury@v0.1.0 vgi-treasury-worker');
 ```
 
-Restart and run all after changing parameters. Connection and domain SQL remain visible; Python imports, plotting, interpretation source and cleanup are folded. The runner creates a temporary kernel with this directory as cwd and saves only successful outputs. Overrides require a separate destination; unknown parameters and source-directory output destinations are rejected.
+Release v0.1.0 resolves to `d5466e080cc8d241ced42b6d82d509c0b70766dc`. Reviewed current public main is `e27520088422ac6b5698c117908a9e8c36a63f62`; both actual catalogs have the same nine signatures. Main adds metadata examples and a truststore-based HTTPS context after the release. The notebook deliberately uses the release's original runtime; it does not claim those changes are already released. No transitive `--with` overrides are required. Notebook dependencies are locked separately from the worker's declared dependency ranges.
 
-## Recorded public response and explicit live mode
+## Recorded public data and live access
 
-The default `DATA_MODE = "recorded"` uses the original official [Debt to the Penny API](https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny) response for **2024-01-02 through 2024-01-31**, captured on **2026-11-14**. It contains 21 records. [Provenance](fixtures/provenance.json) records the exact request parameters, UTC capture time, response hash and coverage; [the raw JSON](fixtures/debt-january-2024.json) retains original currency strings, metadata and links. These amounts are public Treasury records, not synthetic examples.
+The unchanged [debt provenance](fixtures/provenance.json) and [raw response](fixtures/debt-january-2024.json) cover 21 January 2024 reports, captured November 14, 2026. The [additional capture manifest](fixtures/discovery-provenance.json) records exact official requests, UTC times, HTTP status, hashes and row counts for five original responses: 20 cash rows, 905 deposit/withdrawal rows and 115 debt-transaction rows across January 8–12, plus 41 monthly-statement rows and 34 rate rows across January/February reports. Raw bytes, metadata and source strings remain intact.
 
-[recorded_api.py](recorded_api.py) serves the recorded rows through the worker's supported `TREASURY_API_BASE_URL` override and explicit loopback-HTTP opt-in. It filters the recorded date range, preserves row content, and generates pagination envelopes for the requested page size. Unsupported routes, sorts or bounds are rejected. Inherited Treasury settings are cleared for this run and restored on cleanup. Recorded mode does not contact Treasury; the real released worker still performs HTTP, pagination checks, typed decimal conversion and VGI output.
+`recorded_api.py` serves the unchanged debt recording. `multi_recorded_api.py` serves the additional recordings, checks every file hash and advertised total, accepts only known endpoints and bounded date/sort contracts, and re-paginates rows without changing values. `fields()` receives captured metadata from a single recorded row; it does not establish when those labels became available historically. Requests are audited without credentials. Both helpers temporarily replace inherited Treasury settings and restore them at cleanup.
 
-Live mode selects only the official HTTPS endpoint, removes the loopback opt-in, and never falls back to recorded rows:
+The official Fiscal Data service requires **no upstream API key**. Shared `connect(globals())` creates an empty temporary SQL-secret directory before ATTACH, disables persistence and default INI connection autoload, and verifies an empty inventory; these notebooks create no secrets. Cleanup checks it is still empty, closes the connection/store and stops the loopback service. No user's saved credentials are read or changed.
 
-```bash
-uv run --frozen python execute.py --parameters '{"DATA_MODE":"live"}' --output-dir validation/live
+Notebook 01 retains explicit live mode with no silent fallback:
+
+```sh
+uv run --locked --extra runner vgi-notebooks 01_debt_components_and_report_changes.ipynb --parameters '{"DATA_MODE":"live"}' --output-dir validation/live
 ```
 
-It uses the same bounded historical window, not the current date. Live labels show the run start time; separate pages are not an atomic snapshot, and equal-count revisions may escape consistency detection. TLS certificate verification remains enabled. If your Python runtime needs an approved CA bundle, set its standard `SSL_CERT_FILE` environment variable; the notebook does not modify system trust or ship a machine-specific certificate path.
+Live mode selects only the official HTTPS endpoint and disables loopback opt-in. The historical range stays bounded; responses may be revised, pages are not atomic, and equal-count revisions may escape detection. TLS verification remains enabled. If your Python runtime needs an approved CA bundle, configure its standard `SSL_CERT_FILE`; no machine-specific path or global trust change is shipped. A separate released-worker live probe succeeded for January 2–3 on this host. The full live notebook also passed all twelve checks for nine January 2–12 reports; its exact-dollar table and result summary matched the recorded default. This live verification used shared 0.3.29 before the registry-only 0.3.30 update. Future live results are separate from saved recorded defaults; failure never substitutes replay data.
 
-## Focused experiment
+## Interpretation boundaries
 
-```bash
-uv run --frozen python execute.py --parameters '{"END_DATE":"2024-01-19"}' --output-dir validation/longer-window
-```
+01 keeps `DECIMAL(38,2)` USD amounts exact and displays money as strings to preserve cents through pandas. Charts alone use trillions/billions. Debt stocks are not spending or deficits; adjacent-report changes can span several calendar days. The first change remains NULL; missing dates are not filled. Twelve original invariants and the exact HTTP page audit remain.
 
-`END_DATE` accepts ISO dates from 2024-01-03 through 2024-01-31; default is 2024-01-12. The fixed start is 2024-01-02, and bounds are inclusive source record dates. Keep recorded mode for the experiment. Extending the endpoint adds returned reports and pages; compare the net component contributions and endpoint difference without presuming a direction. The shared prefix through January 12 must retain its exact records and differences. Restore 2024-01-12 for the default.
+02 uses whole **USD millions**. In these records, legacy `close_today_bal` is NULL; the value on the explicitly labeled TGA Closing Balance row is in `open_today_bal`. Total deposit/withdrawal rows are selected separately from detail rows to prevent double counting. Cash closing-minus-opening differs from published deposits-minus-withdrawals by at most one million in this capture; the residual is retained, consistent with independently rounded reporting, not forced to zero. Net issues-minus-redemptions has a different scope from net cash. No fiscal cause is inferred from their difference.
 
-Every retrieval uses four rows per page, deterministic `record_date,src_line_nbr` ordering and `max_rows := 0`, streaming all matches inside the bounded range. An explicit cap would return a prefix; SQL LIMIT is not a source cap. Source calls are materialized once with visible CTAS, then captured displays query local tables.
+03 joins monthly details to fiscal-year parent headers and keeps year-to-date totals as checks. Record date is a report identifier, not the represented period of every row. Raw and typed monthly records are reconciled, including NULL headers and source field descriptors. Monthly values remain **API currency units**, scaled by 10⁹ only for plotting; CURRENCY metadata does not establish the website's scale. Rate values remain percentages on outstanding securities. An equal-weight average across component classes is a different statistic from the published aggregate; required principal weights are absent. No interest expense, new-issue price, forecast or sustainability calculation is claimed.
 
-The source unit is **USD**, and all three accounting amounts are `DECIMAL(38,2)`. Displayed amount strings preserve cents through pandas; independent SQL casts compare every original currency string with its typed value. Only presentation ratios use floating-point trillions/billions. Debt stocks are not annual spending or deficits. Adjacent-report changes can span multiple calendar days and are not normalized daily rates. The first report's change remains NULL; weekends and nonreporting dates are not filled. Connecting lines guide the eye and do not create observations.
+## Coverage and validation
 
-Twelve SQL invariants cover keys, dates, units, decimal types, complete components, exact identities, source-string round trips, missing first difference, component changes and telescoping sums. Recorded mode also checks the raw response hash, expected selected row count and complete page sequence. The notebook does not infer fiscal causes, future borrowing or sustainability from these arithmetic identities.
+Actual release and current runtime catalogs contain **nine named functions**, with no tables/views. All nine receive meaningful SQL/result interpretation across the three stories: datasets, fields, records, debt_to_penny, operating_cash_balance, deposits_withdrawals, public_debt_transactions, monthly_statement and average_interest_rates. The curated `datasets()` list is not a full upstream endpoint inventory. `coverage.json` retains full native catalogs, current source differences, editorial mappings and raw-JSON execution receipts; current-interface coverage remains separate from exact release-runtime evidence.
 
-Saved outputs embed both charts. Logs, chart PNGs and experiment copies are ignored under `validation/`; copies include assets, raw response, source helper and locked environment. [STANDARD.md](STANDARD.md) records presentation conventions.
+Each default and meaningful parameter experiment is executed; one fresh preloaded Python 3.12 notebook-only run tests their common launch and companion-download path. Actual hosted Colab is untested. Every figure is reviewed in both variants, with published SVGs checked in GitHub's renderer. Review PNGs, execution logs and experimental notebooks are ignored. The [shared standard](https://github.com/Query-farm/vgi-example-notebooks/blob/main/docs/standard.md) replaces local copies of runner, presentation helpers and standards.
 
-`make check` passed: source Ruff/format, strict mypy, pydoclint, 97 pytest tests, 115 stdio SQL assertions, 115 launch assertions, 79 HTTP assertions, metadata 100/100 L2 with zero findings, and stock DuckDB 2.0.0 checks (18 stdio, 20 authenticated HTTP). No engine rebuild, worker change or root lock modification was needed.
+Unchanged current source CI [43615390721](https://github.com/Query-farm/vgi-treasury/actions/runs/43615390721) is reused, alongside actual released-worker SQL and focused new replay-helper checks. No worker source, root lock, engine build, source test suite, deployment or container publication is part of this notebook-only update.
 
-Validation on 2026-11-14 executed the recorded default, a notebook-only 2024-01-19 experiment, and explicit live mode. The live default's exact-dollar display matched the capture. The longer recorded run increased reports from 9 to 13 and pages from 3 to 4, preserving the shared exact-dollar prefix. All six rendered charts and three runner guards were reviewed. This is recorded validation evidence, not a guarantee that future live responses remain unchanged.
+Shared tools are pinned to [v0.3.30](https://github.com/Query-farm/vgi-example-notebooks/releases/tag/v0.3.30). The `treasury` registry verifies ten companions at public revision `8c193efbca17a1633bbcf95d8fb7e36868e95a26`: two replay helpers, six original public response files and two provenance manifests.
