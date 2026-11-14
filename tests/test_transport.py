@@ -149,3 +149,24 @@ def test_request_budget_interrupts_trickled_body() -> None:
         factory.return_value.open.return_value = io.BytesIO(b'{"data": []}')
         with pytest.raises(ApiError, match="time budget"):
             request_json("data", [], Config(retry_budget=1, min_interval=0))
+
+
+def test_https_uses_system_trust_store() -> None:
+    """Standalone Python builds lack a CA bundle; live HTTPS must verify via the OS store."""
+    import ssl
+    import urllib.request
+
+    import truststore
+
+    from treasury_worker.transport import tls_context
+
+    context = tls_context()
+    assert isinstance(context, truststore.SSLContext)
+    assert context.verify_mode == ssl.CERT_REQUIRED
+    with patch("treasury_worker.transport.urllib.request.build_opener") as factory:
+        factory.return_value.open.side_effect = TimeoutError()
+        with pytest.raises(ApiError):
+            request_json("data", [], Config(attempts=1, min_interval=0))
+    handlers = factory.call_args.args
+    https = [h for h in handlers if isinstance(h, urllib.request.HTTPSHandler)]
+    assert len(https) == 1 and isinstance(getattr(https[0], "_context", None), truststore.SSLContext)

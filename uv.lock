@@ -960,6 +960,7 @@ name = "vgi-treasury-worker"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "truststore" },
     { name = "vgi-python", extra = ["http"] },
 ]
 
@@ -973,7 +974,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "vgi-python", extras = ["http"], specifier = ">=0.51.1,<0.52" }]
+requires-dist = [
+    { name = "truststore", specifier = ">=0.10,<1" },
+    { name = "vgi-python", extras = ["http"], specifier = ">=0.51.1,<0.52" },
+]
 
 [package.metadata.requires-dev]
 dev = [

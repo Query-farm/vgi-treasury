@@ -121,5 +121,29 @@ SELECT * FROM treasury.main.debt_to_penny(sort_fields := 'record_date,record_dat
 ----
 must not repeat
 
+# composed: daily debt change reconciled with DTS issues minus redemptions (USD millions scaled)
+query TTTT
+WITH debt AS (SELECT record_date, tot_pub_debt_out_amt - lag(tot_pub_debt_out_amt) OVER (ORDER BY record_date) AS debt_change_usd FROM treasury.main.debt_to_penny(start_date := '2024-01-02', end_date := '2024-01-12')), flows AS (SELECT record_date, sum(CASE transaction_type WHEN 'Issues' THEN transaction_today_amt ELSE -transaction_today_amt END) * 1000000 AS net_issuance_usd FROM treasury.main.public_debt_transactions(start_date := '2024-01-03', end_date := '2024-01-12') GROUP BY record_date) SELECT f.record_date::VARCHAR, f.net_issuance_usd::VARCHAR, d.debt_change_usd::VARCHAR, (d.debt_change_usd - f.net_issuance_usd)::VARCHAR FROM flows AS f JOIN debt AS d USING (record_date) ORDER BY f.record_date;
+----
+2024-01-03	101000000	0.01	-100999999.99
+2024-01-04	102000000	0.01	-101999999.99
+2024-01-05	103000000	0.01	-102999999.99
+2024-01-06	104000000	0.01	-103999999.99
+
+# composed: TGA closing balance (USD millions) beside total public debt (USD)
+query TTT
+WITH tga AS (SELECT record_date, open_today_bal * 1000000 AS tga_close_usd FROM treasury.main.operating_cash_balance(start_date := '2024-01-02', end_date := '2024-01-03') WHERE account_type = 'Treasury General Account (TGA) Closing Balance') SELECT d.record_date::VARCHAR, d.tot_pub_debt_out_amt::VARCHAR, t.tga_close_usd::VARCHAR FROM treasury.main.debt_to_penny(start_date := '2024-01-02', end_date := '2024-01-03') AS d JOIN tga AS t USING (record_date) ORDER BY d.record_date;
+----
+2024-01-02	37000000000000.35	100000000
+2024-01-03	37000000000000.36	101000000
+
+# composed: label a raw record's fields with fields() metadata
+query TTT
+SELECT f.field_name, f.label, r.record_json ->> f.field_name FROM treasury.main.records('v2/accounting/od/debt_to_penny', start_date := '2024-01-02', end_date := '2024-01-02', max_rows := 1) AS r CROSS JOIN treasury.main.fields('v2/accounting/od/debt_to_penny') AS f WHERE f.source_type = 'CURRENCY' ORDER BY f.field_name;
+----
+debt_held_public_amt	Debt Held by the Public	30000000000000.10
+intragov_hold_amt	Intragovernmental Holdings	7000000000000.25
+tot_pub_debt_out_amt	Total Public Debt Outstanding	37000000000000.35
+
 statement ok
 DETACH treasury;

@@ -78,6 +78,27 @@ duplicate JSON keys and unsupported operators fail before requesting data. Gener
 endpoints may require a different `sort_fields` value. Include keys that uniquely
 order records. Function arguments are pushed upstream; SQL WHERE clauses are local.
 
+Functions combine in one query. This reconciles each day's change in total public
+debt (exact dollars) with the Daily Treasury Statement's issues minus redemptions
+(USD millions, scaled to dollars); the gap stays within a few million dollars:
+
+```sql
+WITH debt AS (
+    SELECT record_date,
+           tot_pub_debt_out_amt - lag(tot_pub_debt_out_amt) OVER (ORDER BY record_date) AS debt_change_usd
+    FROM treasury.main.debt_to_penny(start_date := '2024-01-02', end_date := '2024-01-12')),
+flows AS (
+    SELECT record_date,
+           sum(CASE transaction_type WHEN 'Issues' THEN transaction_today_amt
+                                     ELSE -transaction_today_amt END) * 1000000 AS net_issuance_usd
+    FROM treasury.main.public_debt_transactions(start_date := '2024-01-03', end_date := '2024-01-12')
+    GROUP BY record_date)
+SELECT f.record_date, f.net_issuance_usd, d.debt_change_usd,
+       d.debt_change_usd - f.net_issuance_usd AS gap_usd
+FROM flows AS f JOIN debt AS d USING (record_date)
+ORDER BY f.record_date;
+```
+
 ## Values, units and completeness
 
 - Currency uses DECIMAL(38,2), whole-million DTS amounts use DECIMAL(38,0), and

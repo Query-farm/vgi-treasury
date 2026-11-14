@@ -12,6 +12,7 @@ from typing import Annotated, Any, ClassVar
 import pyarrow as pa
 from vgi.arguments import Arg
 from vgi.invocation import BindResponse
+from vgi.metadata import FunctionExample
 from vgi.table_function import BindParams, OutputCollector, ProcessParams, TableFunctionGenerator, init_single_worker
 from vgi_rpc import ArrowSerializableDataclass
 
@@ -19,6 +20,57 @@ from .api import ENDPOINT_PATTERN, endpoint, filters_json, iso_date, page, sort_
 from .meta import column, function_meta
 from .schemas import DATASETS
 from .transport import ApiError
+
+# Composed examples: each combines two of this worker's functions in one query.
+# Defined once and attached to the function that drives the query; the schema-level
+# example list is built from every function's examples in worker.py.
+DEBT_RECONCILIATION_SQL = (
+    "WITH debt AS (SELECT record_date, tot_pub_debt_out_amt - lag(tot_pub_debt_out_amt) OVER "
+    "(ORDER BY record_date) AS debt_change_usd FROM treasury.main.debt_to_penny(start_date := '2024-01-02', "
+    "end_date := '2024-01-12')), flows AS (SELECT record_date, sum(CASE transaction_type WHEN 'Issues' "
+    "THEN transaction_today_amt ELSE -transaction_today_amt END) * 1000000 AS net_issuance_usd FROM "
+    "treasury.main.public_debt_transactions(start_date := '2024-01-03', end_date := '2024-01-12') "
+    "GROUP BY record_date) SELECT f.record_date, f.net_issuance_usd, d.debt_change_usd, "
+    "d.debt_change_usd - f.net_issuance_usd AS gap_usd FROM flows AS f JOIN debt AS d USING (record_date) "
+    "ORDER BY f.record_date"
+)
+DEBT_RECONCILIATION = FunctionExample(
+    sql=DEBT_RECONCILIATION_SQL,
+    description=(
+        "Reconcile each day's change in total public debt (debt_to_penny, exact dollars) with the Daily "
+        "Treasury Statement's issues minus redemptions (public_debt_transactions, USD millions scaled to "
+        "dollars); the gap stays within a few million dollars because statement amounts are rounded"
+    ),
+)
+TGA_SHARE_OF_DEBT_SQL = (
+    "WITH tga AS (SELECT record_date, open_today_bal * 1000000 AS tga_close_usd FROM "
+    "treasury.main.operating_cash_balance(start_date := '2024-01-02', end_date := '2024-01-12') "
+    "WHERE account_type = 'Treasury General Account (TGA) Closing Balance') SELECT d.record_date, "
+    "d.tot_pub_debt_out_amt, t.tga_close_usd, round(100 * t.tga_close_usd / d.tot_pub_debt_out_amt, 2) "
+    "AS tga_pct_of_debt FROM treasury.main.debt_to_penny(start_date := '2024-01-02', end_date := "
+    "'2024-01-12') AS d JOIN tga AS t USING (record_date) ORDER BY d.record_date"
+)
+TGA_SHARE_OF_DEBT = FunctionExample(
+    sql=TGA_SHARE_OF_DEBT_SQL,
+    description=(
+        "Compare the Treasury General Account closing cash balance (operating_cash_balance; since 2022 the "
+        "closing balance is the open_today_bal of the Closing Balance row, in USD millions) with total public "
+        "debt outstanding (debt_to_penny) for each business day, as a percentage of debt"
+    ),
+)
+LABELLED_RECORD_SQL = (
+    "SELECT f.field_name, f.label, f.source_type, r.record_json ->> f.field_name AS source_value FROM "
+    "treasury.main.records('v1/accounting/mts/mts_table_9', start_date := '2024-01-31', end_date := "
+    "'2024-01-31', max_rows := 1) AS r CROSS JOIN treasury.main.fields('v1/accounting/mts/mts_table_9') AS f "
+    "ORDER BY f.field_name"
+)
+LABELLED_RECORD = FunctionExample(
+    sql=LABELLED_RECORD_SQL,
+    description=(
+        "Label every field of one raw record from an uncurated endpoint (Monthly Treasury Statement Table 9): "
+        "fields() supplies each source field's label and type, records() the original JSON value as text"
+    ),
+)
 
 DATASET_SCHEMA = pa.schema(
     [
@@ -512,6 +564,12 @@ class AverageInterestRates(FiscalFunction[PageArgs]):
         ),
     )
 
+
+# Composed examples sit right after each driving function's basic example, so they
+# are within the first five examples that agent tools show per function.
+Records.Meta.examples.append(LABELLED_RECORD)
+DebtToPenny.Meta.examples.append(DEBT_RECONCILIATION)
+OperatingCashBalance.Meta.examples.append(TGA_SHARE_OF_DEBT)
 
 FUNCTIONS: list[type[Any]] = [
     Datasets,

@@ -7,6 +7,7 @@ import json
 import math
 import os
 import random
+import ssl
 import threading
 import time
 import urllib.error
@@ -16,6 +17,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from typing import Any
+
+import truststore
 
 _RATE_LOCK = threading.Lock()
 _LAST_REQUEST = 0.0
@@ -88,6 +91,15 @@ class Config:
         )
 
 
+def tls_context() -> ssl.SSLContext:
+    """Verify HTTPS against the operating system trust store.
+
+    Standalone Python builds (uv, Docker slim images) may ship without a usable
+    OpenSSL CA bundle, which made every live request fail certificate checks.
+    """
+    return truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+
+
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
     """Never forward the API key to a redirect destination."""
 
@@ -151,7 +163,7 @@ def request_json(
         data=json.dumps(payload, allow_nan=False).encode() if payload is not None else None,
         headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "vgi-treasury/0.1.0"},
     )
-    opener = urllib.request.build_opener(_NoRedirect())
+    opener = urllib.request.build_opener(_NoRedirect(), urllib.request.HTTPSHandler(context=tls_context()))
     deadline = time.monotonic() + config.retry_budget
     for attempt in range(config.attempts):
         _throttle(config.min_interval, deadline)

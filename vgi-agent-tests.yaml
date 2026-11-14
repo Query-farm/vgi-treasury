@@ -35,6 +35,10 @@
     {
       "name": "average_interest_rates",
       "reference_sql": "SELECT security_desc, avg_interest_rate_amt FROM treasury.main.average_interest_rates(start_date := '2024-01-31', end_date := '2024-01-31') ORDER BY security_desc"
+    },
+    {
+      "name": "weekly_debt_reconciliation",
+      "reference_sql": "SELECT (SELECT sum(CASE transaction_type WHEN 'Issues' THEN transaction_today_amt ELSE -transaction_today_amt END) FROM treasury.main.public_debt_transactions(start_date := '2024-01-08', end_date := '2024-01-12'))::BIGINT AS net_issuance_musd, (SELECT round((max_by(tot_pub_debt_out_amt, record_date) - min_by(tot_pub_debt_out_amt, record_date)) / 1000000) FROM treasury.main.debt_to_penny(start_date := '2024-01-05', end_date := '2024-01-12'))::BIGINT AS debt_change_musd"
     }
   ]
 }

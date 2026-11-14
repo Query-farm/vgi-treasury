@@ -56,6 +56,19 @@ CATALOG_TAGS["vgi.agent_test_tasks"] = json.dumps(
         }
         for fn in FUNCTIONS
     ]
+    + [
+        {
+            "name": "weekly_debt_reconciliation",
+            "prompt": (
+                "Using the Treasury worker, compare two measures for the week of 2024-01-08 to 2024-01-12: the "
+                "Daily Treasury Statement's net public debt issuance (all Issues minus all Redemptions across "
+                "every security type, summed over those five business days) and the change in total public debt "
+                "outstanding from its 2024-01-05 value to its 2024-01-12 value. Return one row with exactly the "
+                "columns net_issuance_musd and debt_change_musd, both in whole USD millions as BIGINT (round the "
+                "debt change to the nearest million)."
+            ),
+        }
+    ]
 )
 
 
