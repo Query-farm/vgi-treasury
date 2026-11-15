@@ -1,6 +1,6 @@
 [project]
 name = "vgi-treasury-worker"
-version = "0.1.1"
+version = "0.1.2"
 description = "Treasury Fiscal Data data through typed VGI SQL functions."
 readme = "README.md"
 license = "0BSD"

@@ -75,6 +75,12 @@ CATALOG_DOC_LLM = (
     "arguments are rejected. Missing optional response fields return NULL. Upstream "
     "errors fail the query; SQL WHERE filters are local."
 )
+CATALOG_SOURCES_MD = (
+    "\n\n## Sources and references\n\n"
+    "- [U.S. Treasury Fiscal Data](https://fiscaldata.treasury.gov/)\n"
+    "- [Fiscal Data API documentation](https://fiscaldata.treasury.gov/api-documentation/)\n"
+    "- [Fiscal Data dataset catalog](https://fiscaldata.treasury.gov/datasets/)"
+)
 CATALOG_DOC_MD = (
     "# vgi-treasury\n\n"
     + CATALOG_DOC_LLM
@@ -82,6 +88,10 @@ CATALOG_DOC_MD = (
         "\n\nQueries use bounded HTTP responses and retries. Credentials stay out of "
         "continuation state. See README.md for deployment and operational limits."
     )
+    + CATALOG_SOURCES_MD
+)
+SCHEMA_COMMENT = (
+    "Treasury Fiscal Data endpoints as table functions: debt, cash, transactions, statements and interest rates."
 )
 SCHEMA_DOC_LLM = CATALOG_DOC_LLM
 SCHEMA_DOC_MD = (
