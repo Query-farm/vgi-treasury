@@ -7,6 +7,8 @@
   documentation (VGI183).
 - The `main` schema comment is now a short one-line summary, so the schema's
   `vgi.doc_md` adds detail instead of repeating it (VGI102).
+- The catalog's executable example now calls the worker instead of only
+  querying DuckDB's own catalog (`duckdb_functions()`): `treasury.main.datasets()` looks up the endpoint behind debt_to_penny.
 
 ## 0.1.1 (unreleased)
 

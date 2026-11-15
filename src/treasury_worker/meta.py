@@ -121,13 +121,13 @@ CATALOG_TAGS = {
     "vgi.executable_examples": json.dumps(
         [
             {
-                "name": "discover_datasets",
-                "description": "Discover available functions without credentials or API requests",
-                "sql": (
-                    "SELECT function_name FROM duckdb_functions() WHERE database_name = 'treasury' AND "
-                    "function_name = 'datasets' ORDER BY function_name"
+                "name": "debt_to_penny_endpoint",
+                "description": (
+                    "Look up the Fiscal Data endpoint behind debt_to_penny in the worker's "
+                    "curated dataset catalog (no network request)"
                 ),
-                "expected_result": [{"function_name": "datasets"}],
+                "sql": "SELECT dataset, endpoint FROM treasury.main.datasets() WHERE dataset = 'debt_to_penny'",
+                "expected_result": [{"dataset": "debt_to_penny", "endpoint": "v2/accounting/od/debt_to_penny"}],
             }
         ]
     ),
