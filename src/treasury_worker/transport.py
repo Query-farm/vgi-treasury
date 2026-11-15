@@ -161,7 +161,7 @@ def request_json(
     request = urllib.request.Request(
         url,
         data=json.dumps(payload, allow_nan=False).encode() if payload is not None else None,
-        headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "vgi-treasury/0.1.0"},
+        headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "vgi-treasury/0.1.1"},
     )
     opener = urllib.request.build_opener(_NoRedirect(), urllib.request.HTTPSHandler(context=tls_context()))
     deadline = time.monotonic() + config.retry_budget

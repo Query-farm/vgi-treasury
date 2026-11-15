@@ -58,6 +58,14 @@ def column(name: str, type_: pa.DataType, comment: str, *, nullable: bool = True
     return pa.field(name, type_, nullable=nullable, metadata={b"comment": comment.encode()})
 
 
+# The catalog comment is the worker's one-line directory description (VGI001):
+# plain text, one paragraph, at most 300 characters. Long-form docs live in
+# vgi.doc_md and agent guidance in vgi.doc_llm.
+CATALOG_COMMENT = (
+    "US Treasury Fiscal Data as SQL tables, covering federal debt, operating cash, "
+    "deposits and withdrawals, public debt transactions, monthly statements and "
+    "average interest rates, with exact decimal amounts. No API key needed."
+)
 CATALOG_DOC_LLM = (
     "Query federal debt, operating cash, deposits, withdrawals and public debt "
     "transactions, and discover Fiscal Data endpoint fields. Treasury Fiscal Data is "
