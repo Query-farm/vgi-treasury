@@ -34,7 +34,7 @@ def iso_date(value: str, name: str) -> date:
         if parsed.isoformat() != value:
             raise ValueError
         return parsed
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         raise ApiError(f"{name} must be a valid YYYY-MM-DD date") from None
 
 
@@ -96,7 +96,7 @@ def filters_json(value: str) -> list[str]:
                 encoded = _filter_value(raw)
             filters.append(f"{field}:{op}:{encoded}")
         return filters
-    except (ValueError, TypeError, RecursionError):
+    except ValueError, TypeError, RecursionError:
         raise ApiError(
             "filters_json must be an array of field/op/value objects; operators: eq, lt, lte, gt, gte, in. "
             "Values must be strings or integers without comma/colon delimiters; in requires a nonempty array"

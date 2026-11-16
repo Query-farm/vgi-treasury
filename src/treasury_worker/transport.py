@@ -135,7 +135,7 @@ def retry_delay(header: str | None, attempt: int) -> float:
                 if when.tzinfo is None:
                     when = when.replace(tzinfo=UTC)
                 return max(0.0, (when - datetime.now(UTC)).total_seconds())
-            except (ValueError, TypeError, OverflowError):
+            except ValueError, TypeError, OverflowError:
                 pass
     return float(min(16.0, 0.5 * 2**attempt) + random.uniform(0.0, 0.25))
 
@@ -186,7 +186,7 @@ def request_json(
                 raw = b"".join(chunks)
             try:
                 body = json.loads(raw)
-            except (ValueError, UnicodeError):
+            except ValueError, UnicodeError:
                 raise ApiError(f"TREASURY {endpoint} returned invalid JSON") from None
             if not isinstance(body, dict):
                 raise ApiError(f"TREASURY {endpoint} returned an invalid response or API error")
@@ -207,7 +207,7 @@ def request_json(
                 }.get(status, "upstream request failed")
                 raise ApiError(f"TREASURY {endpoint} returned HTTP {status}: {hint}") from None
             delay = retry_delay(header, attempt)
-        except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException):
+        except urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException:
             if attempt + 1 == config.attempts:
                 raise ApiError(f"TREASURY {endpoint} network request failed after {config.attempts} attempts") from None
             delay = retry_delay(None, attempt)

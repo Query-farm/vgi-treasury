@@ -5,7 +5,7 @@ Exact decimal amounts, source units and complete original records are retained.
 
 ## Install and query
 
-Requires Python 3.13 or newer. Install a wheel from GitHub Releases, or run
+Requires Python 3.14 or newer. Install a wheel from GitHub Releases, or run
 `make build` in the locked source checkout.
 
 ```sql
@@ -181,7 +181,7 @@ make check          # Static checks, pytest, three SQL transports, metadata, sto
 make smoke-live     # Official public Fiscal Data API checks
 make package        # Wheel and source distribution
 uvx twine check dist/*
-python3 ci/verify-artifacts.py --python 3.13
+python3 ci/verify-artifacts.py --python 3.14
 make lint-ai        # Optional external-agent metadata evaluation
 ```
 

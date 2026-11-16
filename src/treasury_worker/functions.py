@@ -226,7 +226,7 @@ def source_json(value: Any) -> str:
     """Serialize source metadata without accepting non-finite JSON numbers."""
     try:
         return json.dumps(value, ensure_ascii=False, allow_nan=False, sort_keys=True)
-    except (TypeError, ValueError, OverflowError):
+    except TypeError, ValueError, OverflowError:
         raise ApiError("Treasury response contains invalid JSON values") from None
 
 
@@ -256,7 +256,7 @@ def convert(value: Any, field: pa.Field[Any]) -> Any:
         if not isinstance(value, str):
             raise ValueError
         return value
-    except (TypeError, ValueError, OverflowError, InvalidOperation):
+    except TypeError, ValueError, OverflowError, InvalidOperation:
         raise ApiError(f"Treasury response has invalid {field.name}") from None
 
 
@@ -358,7 +358,7 @@ class FiscalFunction[T: BaseArgs](TableFunctionGenerator[T, State]):
         rows = cls.fetch(params.args, state)
         try:
             batch = pa.RecordBatch.from_pylist(rows, schema=params.output_schema)
-        except (pa.ArrowException, ValueError, OverflowError):
+        except pa.ArrowException, ValueError, OverflowError:
             raise ApiError("Treasury response cannot be represented by the declared schema") from None
         out.emit(batch)
 
