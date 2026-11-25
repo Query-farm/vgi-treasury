@@ -27,6 +27,8 @@ FROM treasury.main.datasets() ORDER BY dataset;
 The official Fiscal Data API is public and requires no upstream API key. HTTP
 worker authentication is configured separately, as described below.
 
+vgi-treasury 0.2.0 speaks VGI protocol 3.4, so it needs Haybarn 2.0.1 or newer (Haybarn 2.0.0 loads a 3.3 `vgi` extension that cannot attach it).
+
 ## Functions
 
 All functions are in `treasury.main`. SQL NULL arguments are rejected.
